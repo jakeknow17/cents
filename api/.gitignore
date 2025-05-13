@@ -1,2 +1,4 @@
+/dist/
 .env
 database.db
+/app/cents.egg-info/

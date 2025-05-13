@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cents"
+version = "0.0.1"
+dependencies = [
+    "fastapi>=0.115.12",
+    "uvicorn>=0.34.2",
+    "sqlmodel>=0.0.24",
+    "pydantic>=2.11.4",
+    "python-dotenv>=1.1.0",
+    "setuptools>=80.4.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["app"]
