@@ -19,37 +19,33 @@ import org.jooq.impl.UpdatableRecordImpl
 @Suppress("warnings")
 open class JBudgetEntryRecord() : UpdatableRecordImpl<JBudgetEntryRecord>(JBudgetEntry.BUDGET_ENTRY) {
 
-    open var iid: Long?
+    open var id: Long?
         set(value): Unit = set(0, value)
         get(): Long? = get(0) as Long?
 
-    open var uid: String?
-        set(value): Unit = set(1, value)
-        get(): String? = get(1) as String?
-
     open var entryDate: LocalDate?
-        set(value): Unit = set(2, value)
-        get(): LocalDate? = get(2) as LocalDate?
+        set(value): Unit = set(1, value)
+        get(): LocalDate? = get(1) as LocalDate?
 
     open var notes: String?
-        set(value): Unit = set(3, value)
-        get(): String? = get(3) as String?
+        set(value): Unit = set(2, value)
+        get(): String? = get(2) as String?
 
     open var categoryId: Long?
+        set(value): Unit = set(3, value)
+        get(): Long? = get(3) as Long?
+
+    open var vendorId: Long?
         set(value): Unit = set(4, value)
         get(): Long? = get(4) as Long?
 
-    open var vendorId: Long?
-        set(value): Unit = set(5, value)
-        get(): Long? = get(5) as Long?
-
     open var createdAt: OffsetDateTime?
-        set(value): Unit = set(6, value)
-        get(): OffsetDateTime? = get(6) as OffsetDateTime?
+        set(value): Unit = set(5, value)
+        get(): OffsetDateTime? = get(5) as OffsetDateTime?
 
     open var updatedAt: OffsetDateTime?
-        set(value): Unit = set(7, value)
-        get(): OffsetDateTime? = get(7) as OffsetDateTime?
+        set(value): Unit = set(6, value)
+        get(): OffsetDateTime? = get(6) as OffsetDateTime?
 
     // -------------------------------------------------------------------------
     // Primary key information
@@ -60,9 +56,8 @@ open class JBudgetEntryRecord() : UpdatableRecordImpl<JBudgetEntryRecord>(JBudge
     /**
      * Create a detached, initialised JBudgetEntryRecord
      */
-    constructor(iid: Long? = null, uid: String? = null, entryDate: LocalDate? = null, notes: String? = null, categoryId: Long? = null, vendorId: Long? = null, createdAt: OffsetDateTime? = null, updatedAt: OffsetDateTime? = null): this() {
-        this.iid = iid
-        this.uid = uid
+    constructor(id: Long? = null, entryDate: LocalDate? = null, notes: String? = null, categoryId: Long? = null, vendorId: Long? = null, createdAt: OffsetDateTime? = null, updatedAt: OffsetDateTime? = null): this() {
+        this.id = id
         this.entryDate = entryDate
         this.notes = notes
         this.categoryId = categoryId

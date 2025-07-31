@@ -54,6 +54,15 @@ kotlin {
     }
 }
 
+sourceSets {
+    main {
+        java {
+            srcDirs("src/main/kotlin", "src/generated/kotlin")
+        }
+    }
+}
+
+
 tasks.withType<Test> {
     useJUnitPlatform()
 }

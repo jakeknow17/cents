@@ -20,8 +20,5 @@ import org.jooq.impl.Internal
 // -------------------------------------------------------------------------
 
 val IDX_BUDGET_CATEGORY_NAME: Index = Internal.createIndex(DSL.name("idx_budget_category_name"), JBudgetCategory.BUDGET_CATEGORY, arrayOf(JBudgetCategory.BUDGET_CATEGORY.NAME), false)
-val IDX_BUDGET_CATEGORY_UID: Index = Internal.createIndex(DSL.name("idx_budget_category_uid"), JBudgetCategory.BUDGET_CATEGORY, arrayOf(JBudgetCategory.BUDGET_CATEGORY.UID), false)
 val IDX_BUDGET_ENTRY_ENTRY_DATE: Index = Internal.createIndex(DSL.name("idx_budget_entry_entry_date"), JBudgetEntry.BUDGET_ENTRY, arrayOf(JBudgetEntry.BUDGET_ENTRY.ENTRY_DATE), false)
-val IDX_BUDGET_ENTRY_UID: Index = Internal.createIndex(DSL.name("idx_budget_entry_uid"), JBudgetEntry.BUDGET_ENTRY, arrayOf(JBudgetEntry.BUDGET_ENTRY.UID), false)
 val IDX_BUDGET_VENDOR_NAME: Index = Internal.createIndex(DSL.name("idx_budget_vendor_name"), JBudgetVendor.BUDGET_VENDOR, arrayOf(JBudgetVendor.BUDGET_VENDOR.NAME), false)
-val IDX_BUDGET_VENDOR_UID: Index = Internal.createIndex(DSL.name("idx_budget_vendor_uid"), JBudgetVendor.BUDGET_VENDOR, arrayOf(JBudgetVendor.BUDGET_VENDOR.UID), false)

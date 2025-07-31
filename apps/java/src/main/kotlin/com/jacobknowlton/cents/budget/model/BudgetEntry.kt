@@ -4,8 +4,7 @@ import java.time.LocalDate
 import java.time.OffsetDateTime
 
 data class BudgetEntry(
-    val iid: Long,
-    val uid: String,
+    val id: Long? = null,
     val entryDate: LocalDate,
     val notes: String,
     val category: BudgetCategory?,
@@ -14,7 +13,6 @@ data class BudgetEntry(
     val updatedAt: OffsetDateTime
 ) {
     init {
-        require(uid.length == 21) { "UID must be exactly 21 characters long" }
         require(notes.length <= 1000) { "Notes must be 1000 characters or less" }
     }
 }

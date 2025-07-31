@@ -6,11 +6,9 @@ package com.jacobknowlton.cents.jooq.generated.tables
 
 import com.jacobknowlton.cents.jooq.generated.JPublic
 import com.jacobknowlton.cents.jooq.generated.indexes.IDX_BUDGET_CATEGORY_NAME
-import com.jacobknowlton.cents.jooq.generated.indexes.IDX_BUDGET_CATEGORY_UID
 import com.jacobknowlton.cents.jooq.generated.keys.BUDGET_CATEGORY_PKEY
 import com.jacobknowlton.cents.jooq.generated.keys.BUDGET_ENTRY__BUDGET_ENTRY_CATEGORY_ID_FKEY
 import com.jacobknowlton.cents.jooq.generated.keys.UNQ_BUDGET_CATEGORY_NAME
-import com.jacobknowlton.cents.jooq.generated.keys.UNQ_BUDGET_CATEGORY_UID
 import com.jacobknowlton.cents.jooq.generated.tables.JBudgetEntry.JBudgetEntryPath
 import com.jacobknowlton.cents.jooq.generated.tables.records.JBudgetCategoryRecord
 
@@ -84,14 +82,9 @@ open class JBudgetCategory(
     override fun getRecordType(): Class<JBudgetCategoryRecord> = JBudgetCategoryRecord::class.java
 
     /**
-     * The column <code>public.budget_category.iid</code>.
+     * The column <code>public.budget_category.id</code>.
      */
-    val IID: TableField<JBudgetCategoryRecord, Long?> = createField(DSL.name("iid"), SQLDataType.BIGINT.nullable(false).identity(true), this, "")
-
-    /**
-     * The column <code>public.budget_category.uid</code>.
-     */
-    val UID: TableField<JBudgetCategoryRecord, String?> = createField(DSL.name("uid"), SQLDataType.CLOB.nullable(false), this, "")
+    val ID: TableField<JBudgetCategoryRecord, Long?> = createField(DSL.name("id"), SQLDataType.BIGINT.nullable(false).identity(true), this, "")
 
     /**
      * The column <code>public.budget_category.name</code>.
@@ -145,10 +138,10 @@ open class JBudgetCategory(
         override fun `as`(alias: Table<*>): JBudgetCategoryPath = JBudgetCategoryPath(alias.qualifiedName, this)
     }
     override fun getSchema(): Schema? = if (aliased()) null else JPublic.PUBLIC
-    override fun getIndexes(): List<Index> = listOf(IDX_BUDGET_CATEGORY_NAME, IDX_BUDGET_CATEGORY_UID)
+    override fun getIndexes(): List<Index> = listOf(IDX_BUDGET_CATEGORY_NAME)
     override fun getIdentity(): Identity<JBudgetCategoryRecord, Long?> = super.getIdentity() as Identity<JBudgetCategoryRecord, Long?>
     override fun getPrimaryKey(): UniqueKey<JBudgetCategoryRecord> = BUDGET_CATEGORY_PKEY
-    override fun getUniqueKeys(): List<UniqueKey<JBudgetCategoryRecord>> = listOf(UNQ_BUDGET_CATEGORY_NAME, UNQ_BUDGET_CATEGORY_UID)
+    override fun getUniqueKeys(): List<UniqueKey<JBudgetCategoryRecord>> = listOf(UNQ_BUDGET_CATEGORY_NAME)
 
     private lateinit var _budgetEntry: JBudgetEntryPath
 
@@ -167,8 +160,7 @@ open class JBudgetCategory(
         get(): JBudgetEntryPath = budgetEntry()
     override fun getChecks(): List<Check<JBudgetCategoryRecord>> = listOf(
         Internal.createCheck(this, DSL.name("chk_budget_category_budget_limit"), "((budget_limit >= (0)::numeric))", true),
-        Internal.createCheck(this, DSL.name("chk_budget_category_name_len"), "((char_length(name) <= 255))", true),
-        Internal.createCheck(this, DSL.name("chk_budget_category_uid_len"), "((char_length(uid) = 21))", true)
+        Internal.createCheck(this, DSL.name("chk_budget_category_name_len"), "((char_length(name) <= 255))", true)
     )
     override fun `as`(alias: String): JBudgetCategory = JBudgetCategory(DSL.name(alias), this)
     override fun `as`(alias: Name): JBudgetCategory = JBudgetCategory(alias, this)

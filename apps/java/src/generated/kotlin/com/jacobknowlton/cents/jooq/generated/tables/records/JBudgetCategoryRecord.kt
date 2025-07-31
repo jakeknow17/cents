@@ -19,29 +19,25 @@ import org.jooq.impl.UpdatableRecordImpl
 @Suppress("warnings")
 open class JBudgetCategoryRecord() : UpdatableRecordImpl<JBudgetCategoryRecord>(JBudgetCategory.BUDGET_CATEGORY) {
 
-    open var iid: Long?
+    open var id: Long?
         set(value): Unit = set(0, value)
         get(): Long? = get(0) as Long?
 
-    open var uid: String?
+    open var name: String?
         set(value): Unit = set(1, value)
         get(): String? = get(1) as String?
 
-    open var name: String?
-        set(value): Unit = set(2, value)
-        get(): String? = get(2) as String?
-
     open var budgetLimit: BigDecimal?
-        set(value): Unit = set(3, value)
-        get(): BigDecimal? = get(3) as BigDecimal?
+        set(value): Unit = set(2, value)
+        get(): BigDecimal? = get(2) as BigDecimal?
 
     open var createdAt: OffsetDateTime?
-        set(value): Unit = set(4, value)
-        get(): OffsetDateTime? = get(4) as OffsetDateTime?
+        set(value): Unit = set(3, value)
+        get(): OffsetDateTime? = get(3) as OffsetDateTime?
 
     open var updatedAt: OffsetDateTime?
-        set(value): Unit = set(5, value)
-        get(): OffsetDateTime? = get(5) as OffsetDateTime?
+        set(value): Unit = set(4, value)
+        get(): OffsetDateTime? = get(4) as OffsetDateTime?
 
     // -------------------------------------------------------------------------
     // Primary key information
@@ -52,9 +48,8 @@ open class JBudgetCategoryRecord() : UpdatableRecordImpl<JBudgetCategoryRecord>(
     /**
      * Create a detached, initialised JBudgetCategoryRecord
      */
-    constructor(iid: Long? = null, uid: String? = null, name: String? = null, budgetLimit: BigDecimal? = null, createdAt: OffsetDateTime? = null, updatedAt: OffsetDateTime? = null): this() {
-        this.iid = iid
-        this.uid = uid
+    constructor(id: Long? = null, name: String? = null, budgetLimit: BigDecimal? = null, createdAt: OffsetDateTime? = null, updatedAt: OffsetDateTime? = null): this() {
+        this.id = id
         this.name = name
         this.budgetLimit = budgetLimit
         this.createdAt = createdAt

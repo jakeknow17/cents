@@ -11,8 +11,7 @@ class BudgetCategoryMapper : RecordMapper<Record, BudgetCategory> {
     override fun map(record: Record?): BudgetCategory? {
         return record?.let {
             BudgetCategory(
-                iid = it.getValue(BUDGET_CATEGORY.IID, Long::class.java),
-                uid = it.getValue(BUDGET_CATEGORY.UID, String::class.java),
+                id = it.getValue(BUDGET_CATEGORY.ID, Long::class.java),
                 name = it.getValue(BUDGET_CATEGORY.NAME, String::class.java),
                 budgetLimit = it.getValue(BUDGET_CATEGORY.BUDGET_LIMIT, BigDecimal::class.java),
                 createdAt = it.getValue(BUDGET_CATEGORY.CREATED_AT, OffsetDateTime::class.java),

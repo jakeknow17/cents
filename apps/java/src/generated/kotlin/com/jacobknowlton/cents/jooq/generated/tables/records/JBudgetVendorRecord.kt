@@ -18,25 +18,21 @@ import org.jooq.impl.UpdatableRecordImpl
 @Suppress("warnings")
 open class JBudgetVendorRecord() : UpdatableRecordImpl<JBudgetVendorRecord>(JBudgetVendor.BUDGET_VENDOR) {
 
-    open var iid: Long?
+    open var id: Long?
         set(value): Unit = set(0, value)
         get(): Long? = get(0) as Long?
 
-    open var uid: String?
+    open var name: String?
         set(value): Unit = set(1, value)
         get(): String? = get(1) as String?
 
-    open var name: String?
-        set(value): Unit = set(2, value)
-        get(): String? = get(2) as String?
-
     open var createdAt: OffsetDateTime?
-        set(value): Unit = set(3, value)
-        get(): OffsetDateTime? = get(3) as OffsetDateTime?
+        set(value): Unit = set(2, value)
+        get(): OffsetDateTime? = get(2) as OffsetDateTime?
 
     open var updatedAt: OffsetDateTime?
-        set(value): Unit = set(4, value)
-        get(): OffsetDateTime? = get(4) as OffsetDateTime?
+        set(value): Unit = set(3, value)
+        get(): OffsetDateTime? = get(3) as OffsetDateTime?
 
     // -------------------------------------------------------------------------
     // Primary key information
@@ -47,9 +43,8 @@ open class JBudgetVendorRecord() : UpdatableRecordImpl<JBudgetVendorRecord>(JBud
     /**
      * Create a detached, initialised JBudgetVendorRecord
      */
-    constructor(iid: Long? = null, uid: String? = null, name: String? = null, createdAt: OffsetDateTime? = null, updatedAt: OffsetDateTime? = null): this() {
-        this.iid = iid
-        this.uid = uid
+    constructor(id: Long? = null, name: String? = null, createdAt: OffsetDateTime? = null, updatedAt: OffsetDateTime? = null): this() {
+        this.id = id
         this.name = name
         this.createdAt = createdAt
         this.updatedAt = updatedAt

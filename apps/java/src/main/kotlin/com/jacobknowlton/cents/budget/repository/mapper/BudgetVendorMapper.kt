@@ -10,8 +10,7 @@ class BudgetVendorMapper : RecordMapper<Record, BudgetVendor> {
     override fun map(record: Record?): BudgetVendor? {
         return record?.let {
             BudgetVendor(
-                iid = it.getValue(BUDGET_VENDOR.IID, Long::class.java),
-                uid = it.getValue(BUDGET_VENDOR.UID, String::class.java),
+                id = it.getValue(BUDGET_VENDOR.ID, Long::class.java),
                 name = it.getValue(BUDGET_VENDOR.NAME, String::class.java),
                 createdAt = it.getValue(BUDGET_VENDOR.CREATED_AT, OffsetDateTime::class.java),
                 updatedAt = it.getValue(BUDGET_VENDOR.UPDATED_AT, OffsetDateTime::class.java)
