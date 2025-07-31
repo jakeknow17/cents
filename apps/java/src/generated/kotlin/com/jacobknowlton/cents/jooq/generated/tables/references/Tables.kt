@@ -5,11 +5,23 @@
 package com.jacobknowlton.cents.jooq.generated.tables.references
 
 
-import com.jacobknowlton.cents.jooq.generated.tables.JUsers
+import com.jacobknowlton.cents.jooq.generated.tables.JBudgetCategory
+import com.jacobknowlton.cents.jooq.generated.tables.JBudgetEntry
+import com.jacobknowlton.cents.jooq.generated.tables.JBudgetVendor
 
 
 
 /**
- * The table <code>public.users</code>.
+ * The table <code>public.budget_category</code>.
  */
-val USERS: JUsers = JUsers.USERS
+val BUDGET_CATEGORY: JBudgetCategory = JBudgetCategory.BUDGET_CATEGORY
+
+/**
+ * The table <code>public.budget_entry</code>.
+ */
+val BUDGET_ENTRY: JBudgetEntry = JBudgetEntry.BUDGET_ENTRY
+
+/**
+ * The table <code>public.budget_vendor</code>.
+ */
+val BUDGET_VENDOR: JBudgetVendor = JBudgetVendor.BUDGET_VENDOR

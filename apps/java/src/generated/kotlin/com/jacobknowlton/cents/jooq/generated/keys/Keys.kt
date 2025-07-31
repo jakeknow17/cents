@@ -5,12 +5,18 @@
 package com.jacobknowlton.cents.jooq.generated.keys
 
 
-import com.jacobknowlton.cents.jooq.generated.tables.JUsers
-import com.jacobknowlton.cents.jooq.generated.tables.records.JUsersRecord
+import com.jacobknowlton.cents.jooq.generated.tables.JBudgetCategory
+import com.jacobknowlton.cents.jooq.generated.tables.JBudgetEntry
+import com.jacobknowlton.cents.jooq.generated.tables.JBudgetVendor
+import com.jacobknowlton.cents.jooq.generated.tables.records.JBudgetCategoryRecord
+import com.jacobknowlton.cents.jooq.generated.tables.records.JBudgetEntryRecord
+import com.jacobknowlton.cents.jooq.generated.tables.records.JBudgetVendorRecord
 
+import org.jooq.ForeignKey
 import org.jooq.UniqueKey
 import org.jooq.impl.DSL
 import org.jooq.impl.Internal
+import org.jooq.impl.QOM.ForeignKeyRule
 
 
 
@@ -18,4 +24,18 @@ import org.jooq.impl.Internal
 // UNIQUE and PRIMARY KEY definitions
 // -------------------------------------------------------------------------
 
-val USERS_PKEY: UniqueKey<JUsersRecord> = Internal.createUniqueKey(JUsers.USERS, DSL.name("users_pkey"), arrayOf(JUsers.USERS.ID), true)
+val BUDGET_CATEGORY_PKEY: UniqueKey<JBudgetCategoryRecord> = Internal.createUniqueKey(JBudgetCategory.BUDGET_CATEGORY, DSL.name("budget_category_pkey"), arrayOf(JBudgetCategory.BUDGET_CATEGORY.IID), true)
+val UNQ_BUDGET_CATEGORY_NAME: UniqueKey<JBudgetCategoryRecord> = Internal.createUniqueKey(JBudgetCategory.BUDGET_CATEGORY, DSL.name("unq_budget_category_name"), arrayOf(JBudgetCategory.BUDGET_CATEGORY.NAME), true)
+val UNQ_BUDGET_CATEGORY_UID: UniqueKey<JBudgetCategoryRecord> = Internal.createUniqueKey(JBudgetCategory.BUDGET_CATEGORY, DSL.name("unq_budget_category_uid"), arrayOf(JBudgetCategory.BUDGET_CATEGORY.UID), true)
+val BUDGET_ENTRY_PKEY: UniqueKey<JBudgetEntryRecord> = Internal.createUniqueKey(JBudgetEntry.BUDGET_ENTRY, DSL.name("budget_entry_pkey"), arrayOf(JBudgetEntry.BUDGET_ENTRY.IID), true)
+val UNQ_BUDGET_ENTRY_UID: UniqueKey<JBudgetEntryRecord> = Internal.createUniqueKey(JBudgetEntry.BUDGET_ENTRY, DSL.name("unq_budget_entry_uid"), arrayOf(JBudgetEntry.BUDGET_ENTRY.UID), true)
+val BUDGET_VENDOR_PKEY: UniqueKey<JBudgetVendorRecord> = Internal.createUniqueKey(JBudgetVendor.BUDGET_VENDOR, DSL.name("budget_vendor_pkey"), arrayOf(JBudgetVendor.BUDGET_VENDOR.IID), true)
+val UNQ_BUDGET_VENDOR_NAME: UniqueKey<JBudgetVendorRecord> = Internal.createUniqueKey(JBudgetVendor.BUDGET_VENDOR, DSL.name("unq_budget_vendor_name"), arrayOf(JBudgetVendor.BUDGET_VENDOR.NAME), true)
+val UNQ_BUDGET_VENDOR_UID: UniqueKey<JBudgetVendorRecord> = Internal.createUniqueKey(JBudgetVendor.BUDGET_VENDOR, DSL.name("unq_budget_vendor_uid"), arrayOf(JBudgetVendor.BUDGET_VENDOR.UID), true)
+
+// -------------------------------------------------------------------------
+// FOREIGN KEY definitions
+// -------------------------------------------------------------------------
+
+val BUDGET_ENTRY__BUDGET_ENTRY_CATEGORY_ID_FKEY: ForeignKey<JBudgetEntryRecord, JBudgetCategoryRecord> = Internal.createForeignKey(JBudgetEntry.BUDGET_ENTRY, DSL.name("budget_entry_category_id_fkey"), arrayOf(JBudgetEntry.BUDGET_ENTRY.CATEGORY_ID), com.jacobknowlton.cents.jooq.generated.keys.BUDGET_CATEGORY_PKEY, arrayOf(JBudgetCategory.BUDGET_CATEGORY.IID), true, ForeignKeyRule.SET_NULL, ForeignKeyRule.NO_ACTION)
+val BUDGET_ENTRY__BUDGET_ENTRY_VENDOR_ID_FKEY: ForeignKey<JBudgetEntryRecord, JBudgetVendorRecord> = Internal.createForeignKey(JBudgetEntry.BUDGET_ENTRY, DSL.name("budget_entry_vendor_id_fkey"), arrayOf(JBudgetEntry.BUDGET_ENTRY.VENDOR_ID), com.jacobknowlton.cents.jooq.generated.keys.BUDGET_VENDOR_PKEY, arrayOf(JBudgetVendor.BUDGET_VENDOR.IID), true, ForeignKeyRule.SET_NULL, ForeignKeyRule.NO_ACTION)

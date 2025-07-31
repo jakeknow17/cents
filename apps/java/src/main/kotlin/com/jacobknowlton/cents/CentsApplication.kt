@@ -7,5 +7,5 @@ import org.springframework.boot.runApplication
 class CentsApplication
 
 fun main(args: Array<String>) {
-	runApplication<CentsApplication>(*args)
+    runApplication<CentsApplication>(*args)
 }

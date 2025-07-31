@@ -4,7 +4,9 @@
 package com.jacobknowlton.cents.jooq.generated
 
 
-import com.jacobknowlton.cents.jooq.generated.tables.JUsers
+import com.jacobknowlton.cents.jooq.generated.tables.JBudgetCategory
+import com.jacobknowlton.cents.jooq.generated.tables.JBudgetEntry
+import com.jacobknowlton.cents.jooq.generated.tables.JBudgetVendor
 
 import kotlin.collections.List
 
@@ -28,13 +30,25 @@ open class JPublic : SchemaImpl(DSL.name("public"), DefaultCatalog.DEFAULT_CATAL
     }
 
     /**
-     * The table <code>public.users</code>.
+     * The table <code>public.budget_category</code>.
      */
-    val USERS: JUsers get() = JUsers.USERS
+    val BUDGET_CATEGORY: JBudgetCategory get() = JBudgetCategory.BUDGET_CATEGORY
+
+    /**
+     * The table <code>public.budget_entry</code>.
+     */
+    val BUDGET_ENTRY: JBudgetEntry get() = JBudgetEntry.BUDGET_ENTRY
+
+    /**
+     * The table <code>public.budget_vendor</code>.
+     */
+    val BUDGET_VENDOR: JBudgetVendor get() = JBudgetVendor.BUDGET_VENDOR
 
     override fun getCatalog(): Catalog = DefaultCatalog.DEFAULT_CATALOG
 
     override fun getTables(): List<Table<*>> = listOf(
-        JUsers.USERS
+        JBudgetCategory.BUDGET_CATEGORY,
+        JBudgetEntry.BUDGET_ENTRY,
+        JBudgetVendor.BUDGET_VENDOR
     )
 }
