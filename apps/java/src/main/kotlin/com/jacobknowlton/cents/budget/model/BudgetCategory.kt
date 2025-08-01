@@ -7,8 +7,8 @@ data class BudgetCategory(
     val id: Long,
     val name: String,
     val budgetLimit: BigDecimal,
-    val createdAt: OffsetDateTime,
-    val updatedAt: OffsetDateTime
+    val createdAt: OffsetDateTime? = null,
+    val updatedAt: OffsetDateTime? = null
 ) {
     init {
         require(id >= 0) { "Category id cannot be negative" }

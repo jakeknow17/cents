@@ -9,8 +9,8 @@ data class BudgetEntry(
     val notes: String,
     val category: BudgetCategory?,
     val vendor: BudgetVendor?,
-    val createdAt: OffsetDateTime,
-    val updatedAt: OffsetDateTime
+    val createdAt: OffsetDateTime? = null,
+    val updatedAt: OffsetDateTime? = null
 ) {
     init {
         require(id >= 0) { "Entry id cannot be negative" }
