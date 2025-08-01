@@ -4,7 +4,7 @@ import java.time.LocalDate
 import java.time.OffsetDateTime
 
 data class BudgetEntry(
-    val id: Long? = null,
+    val id: Long,
     val entryDate: LocalDate,
     val notes: String,
     val category: BudgetCategory?,
@@ -13,6 +13,7 @@ data class BudgetEntry(
     val updatedAt: OffsetDateTime
 ) {
     init {
+        require(id >= 0) { "Entry id cannot be negative" }
         require(notes.length <= 1000) { "Notes must be 1000 characters or less" }
     }
 }

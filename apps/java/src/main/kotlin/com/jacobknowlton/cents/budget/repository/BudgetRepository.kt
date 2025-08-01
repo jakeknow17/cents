@@ -3,6 +3,8 @@ package com.jacobknowlton.cents.budget.repository
 import com.jacobknowlton.cents.budget.model.BudgetCategory
 import com.jacobknowlton.cents.budget.model.BudgetEntry
 import com.jacobknowlton.cents.budget.model.BudgetVendor
+import com.jacobknowlton.cents.budget.model.requests.BudgetCategoryRequest
+import com.jacobknowlton.cents.budget.model.requests.BudgetVendorRequest
 import com.jacobknowlton.cents.budget.repository.mapper.BudgetCategoryMapper
 import com.jacobknowlton.cents.budget.repository.mapper.BudgetEntryMapper
 import com.jacobknowlton.cents.budget.repository.mapper.BudgetVendorMapper
@@ -24,7 +26,7 @@ class BudgetRepository(private val dsl: DSLContext) {
     )
 
     @Transactional
-    fun createCategory(category: BudgetCategory): BudgetCategory? =
+    fun createCategory(category: BudgetCategoryRequest): BudgetCategory? =
         dsl.insertInto(BUDGET_CATEGORY)
             .set(BUDGET_CATEGORY.NAME, category.name)
             .set(BUDGET_CATEGORY.BUDGET_LIMIT, category.budgetLimit)
@@ -41,15 +43,13 @@ class BudgetRepository(private val dsl: DSLContext) {
             .fetch(categoryMapper)
 
     @Transactional
-    fun updateCategory(category: BudgetCategory): BudgetCategory? {
-        category.id ?: throw IllegalArgumentException("Category ID must not be null for update")
-        return dsl.update(BUDGET_CATEGORY)
+    fun updateCategory(category: BudgetCategory): BudgetCategory? =
+        dsl.update(BUDGET_CATEGORY)
             .set(BUDGET_CATEGORY.NAME, category.name)
             .set(BUDGET_CATEGORY.BUDGET_LIMIT, category.budgetLimit)
             .where(BUDGET_CATEGORY.ID.eq(category.id))
             .returning()
             .fetchOne(categoryMapper)
-    }
 
     @Transactional
     fun deleteCategory(iid: Long): Boolean =
@@ -58,7 +58,7 @@ class BudgetRepository(private val dsl: DSLContext) {
             .execute() > 0
 
     @Transactional
-    fun createVendor(vendor: BudgetVendor): BudgetVendor? =
+    fun createVendor(vendor: BudgetVendorRequest): BudgetVendor? =
         dsl.insertInto(BUDGET_VENDOR)
             .set(BUDGET_VENDOR.NAME, vendor.name)
             .returning()
@@ -74,14 +74,12 @@ class BudgetRepository(private val dsl: DSLContext) {
             .fetch(vendorMapper)
 
     @Transactional
-    fun updateVendor(vendor: BudgetVendor): BudgetVendor? {
-        vendor.id ?: throw IllegalArgumentException("Vendor ID must not be null for update")
-        return dsl.update(BUDGET_VENDOR)
+    fun updateVendor(vendor: BudgetVendor): BudgetVendor? =
+        dsl.update(BUDGET_VENDOR)
             .set(BUDGET_VENDOR.NAME, vendor.name)
             .where(BUDGET_VENDOR.ID.eq(vendor.id))
             .returning()
             .fetchOne(vendorMapper)
-    }
 
     @Transactional
     fun deleteVendor(iid: Long): Boolean =
@@ -119,7 +117,6 @@ class BudgetRepository(private val dsl: DSLContext) {
 
     @Transactional
     fun updateEntry(entry: BudgetEntry): BudgetEntry? {
-        entry.id ?: throw IllegalArgumentException("Entry ID must not be null for update")
         dsl.update(BUDGET_ENTRY)
             .set(BUDGET_ENTRY.ENTRY_DATE, entry.entryDate)
             .set(BUDGET_ENTRY.NOTES, entry.notes)
