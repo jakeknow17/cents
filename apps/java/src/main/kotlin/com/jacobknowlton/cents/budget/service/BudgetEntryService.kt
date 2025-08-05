@@ -1,7 +1,7 @@
 package com.jacobknowlton.cents.budget.service
 
 import com.jacobknowlton.cents.generated.budget.model.BudgetEntry
-import com.jacobknowlton.cents.budget.model.requests.BudgetEntryRequest
+import com.jacobknowlton.cents.generated.budget.model.request.BudgetEntryRequest
 import com.jacobknowlton.cents.budget.repository.BudgetEntryRepository
 import com.jacobknowlton.cents.common.PageResult
 import com.jacobknowlton.cents.jooq.generated.tables.records.JBudgetEntryRecord

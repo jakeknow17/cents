@@ -1,7 +1,7 @@
 package com.jacobknowlton.cents.budget.service
 
 import com.jacobknowlton.cents.generated.budget.model.BudgetCategory
-import com.jacobknowlton.cents.budget.model.requests.BudgetCategoryRequest
+import com.jacobknowlton.cents.generated.budget.model.request.BudgetCategoryRequest
 import com.jacobknowlton.cents.budget.repository.BudgetCategoryRepository
 import com.jacobknowlton.cents.common.PageResult
 import com.jacobknowlton.cents.jooq.generated.tables.records.JBudgetCategoryRecord
