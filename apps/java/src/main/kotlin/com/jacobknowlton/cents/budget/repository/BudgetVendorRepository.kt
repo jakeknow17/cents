@@ -1,6 +1,6 @@
 package com.jacobknowlton.cents.budget.repository
 
-import com.jacobknowlton.cents.budget.model.BudgetVendor
+import com.jacobknowlton.cents.generated.budget.model.BudgetVendor
 import com.jacobknowlton.cents.budget.model.requests.BudgetVendorRequest
 import com.jacobknowlton.cents.budget.repository.mapper.BudgetVendorMapper
 import com.jacobknowlton.cents.common.JooqCrudRepository

@@ -1,6 +1,6 @@
 package com.jacobknowlton.cents.budget.repository
 
-import com.jacobknowlton.cents.budget.model.BudgetCategory
+import com.jacobknowlton.cents.generated.budget.model.BudgetCategory
 import com.jacobknowlton.cents.budget.model.requests.BudgetCategoryRequest
 import com.jacobknowlton.cents.budget.repository.mapper.BudgetCategoryMapper
 import com.jacobknowlton.cents.common.JooqCrudRepository

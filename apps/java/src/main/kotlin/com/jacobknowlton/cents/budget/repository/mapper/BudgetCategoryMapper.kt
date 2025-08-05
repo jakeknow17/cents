@@ -1,6 +1,6 @@
 package com.jacobknowlton.cents.budget.repository.mapper
 
-import com.jacobknowlton.cents.budget.model.BudgetCategory
+import com.jacobknowlton.cents.generated.budget.model.BudgetCategory
 import com.jacobknowlton.cents.jooq.generated.tables.references.BUDGET_CATEGORY
 import org.jooq.Record
 import org.jooq.RecordMapper
