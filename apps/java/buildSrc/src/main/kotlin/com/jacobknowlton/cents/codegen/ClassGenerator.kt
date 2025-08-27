@@ -13,18 +13,18 @@ class ClassGenerator(
     }
 
     fun generateModelClass() {
-        val modelSb = StringBuilder()
+        val sb = StringBuilder()
         // Package declaration
-        modelSb.appendLine(GENERATED_COMMENT)
-        modelSb.appendLine()
-        modelSb.appendLine("package ${basePackage}.${schema.pkg}.model")
-        modelSb.appendLine()
+        sb.appendLine(GENERATED_COMMENT)
+        sb.appendLine()
+        sb.appendLine("package $basePackage.${schema.pkg}.model")
+        sb.appendLine()
         // Import statements
         val imports = schema.fields
             .filter { it.typePkg != null }
             .map {
                 if (it.isRef)
-                    "${basePackage}${it.typePkg}.${it.type}"
+                    "$basePackage${it.typePkg}.${it.type}"
                 else
                     "${it.typePkg}.${it.type}"
             }
@@ -32,34 +32,34 @@ class ClassGenerator(
         imports += "java.time.OffsetDateTime" // Import for createdAt and updatedAt fields
 
         for (import in imports) {
-            modelSb.appendLine("import $import")
+            sb.appendLine("import $import")
         }
-        modelSb.appendLine()
+        sb.appendLine()
         // Class declaration
-        modelSb.appendLine("data class ${schema.name}(")
+        sb.appendLine("data class ${schema.name}(")
         // Fields
-        modelSb.appendLine("${TAB}val id: Long,")
+        sb.appendLine("${TAB}val id: Long,")
         for (field in schema.fields) {
-            modelSb.appendLine("${TAB}val ${field.name}: ${field.type}${if (field.isNullable) "? = null" else ""},")
+            sb.appendLine("${TAB}val ${field.name}: ${field.type}${if (field.isNullable) "? = null" else ""},")
         }
-        modelSb.appendLine("${TAB}val createdAt: OffsetDateTime? = null,")
-        modelSb.appendLine("${TAB}val updatedAt: OffsetDateTime? = null,")
+        sb.appendLine("${TAB}val createdAt: OffsetDateTime? = null,")
+        sb.appendLine("${TAB}val updatedAt: OffsetDateTime? = null,")
 
-        modelSb.appendLine(")")
+        sb.appendLine(")")
 
 
         val outFile = outputDir.resolve("${schema.pkg.replace('.', '/')}/model/${schema.name}.kt")
         outFile.parentFile.mkdirs()
-        outFile.writeText(modelSb.toString())
+        outFile.writeText(sb.toString())
     }
 
     fun generateRequestClass() {
-        val modelSb = StringBuilder()
+        val sb = StringBuilder()
         // Package declaration
-        modelSb.appendLine(GENERATED_COMMENT)
-        modelSb.appendLine()
-        modelSb.appendLine("package ${basePackage}.${schema.pkg}.model.request")
-        modelSb.appendLine()
+        sb.appendLine(GENERATED_COMMENT)
+        sb.appendLine()
+        sb.appendLine("package ${basePackage}.${schema.pkg}.model.request")
+        sb.appendLine()
 
         val imports = schema.fields
             .filter { it.typePkg != null && !it.isRef }
@@ -67,21 +67,20 @@ class ClassGenerator(
             .distinct()
 
         for (import in imports) {
-            modelSb.appendLine("import $import")
+            sb.appendLine("import $import")
         }
-        modelSb.appendLine()
+        sb.appendLine()
         // Class declaration
-        modelSb.appendLine("data class ${schema.name}Request(")
+        sb.appendLine("data class ${schema.name}Request(")
         // Fields
         for (field in schema.fields) {
-            modelSb.appendLine("${TAB}val ${field.name}${if (field.isRef) "Id" else ""}: ${if (field.isRef) "Long" else field.type}${if (field.isNullable) "? = null" else ""},")
+            sb.appendLine("${TAB}val ${field.name}${if (field.isRef) "Id" else ""}: ${if (field.isRef) "Long" else field.type}${if (field.isNullable) "? = null" else ""},")
         }
-        modelSb.appendLine(")")
+        sb.appendLine(")")
 
         val outFile = outputDir.resolve("${schema.pkg.replace('.', '/')}/model/request/${schema.name}Request.kt")
         outFile.parentFile.mkdirs()
-        outFile.writeText(modelSb.toString())
+        outFile.writeText(sb.toString())
     }
-
 
 }

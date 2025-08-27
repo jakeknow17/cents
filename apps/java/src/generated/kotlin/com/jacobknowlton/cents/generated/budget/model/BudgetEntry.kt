@@ -9,8 +9,8 @@ data class BudgetEntry(
     val id: Long,
     val entryDate: LocalDate,
     val notes: String,
-    val category: BudgetCategory? = null,
-    val vendor: BudgetVendor? = null,
+    val budgetCategory: BudgetCategory? = null,
+    val budgetVendor: BudgetVendor? = null,
     val createdAt: OffsetDateTime? = null,
     val updatedAt: OffsetDateTime? = null,
 )

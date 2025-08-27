@@ -28,8 +28,8 @@ CREATE TABLE IF NOT EXISTS budget_vendor (
     name        TEXT NOT NULL,
     created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at  TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    CONSTRAINT unq_budget_vendor_name           UNIQUE (name),
-    CONSTRAINT chk_budget_vendor_name_len       CHECK (char_length(name) <= 255)
+    CONSTRAINT unq_budget_vendor_name     UNIQUE (name),
+    CONSTRAINT chk_budget_vendor_name_len CHECK (char_length(name) <= 255)
 );
 CREATE INDEX IF NOT EXISTS idx_budget_vendor_name ON budget_vendor (name);
 CREATE OR REPLACE TRIGGER trg_budget_vendor_updated_at_before_update
@@ -37,16 +37,16 @@ CREATE OR REPLACE TRIGGER trg_budget_vendor_updated_at_before_update
     FOR EACH ROW EXECUTE FUNCTION updated_at_now();
 
 CREATE TABLE IF NOT EXISTS budget_entry (
-    id              BIGSERIAL PRIMARY KEY,
-    entry_date      DATE NOT NULL,
-    notes           TEXT NOT NULL,
-    category_id     BIGINT REFERENCES budget_category (id) ON DELETE SET NULL,
-    vendor_id       BIGINT REFERENCES budget_vendor (id) ON DELETE SET NULL,
-    created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    CONSTRAINT chk_budget_entry_notes_len       CHECK (char_length(notes) <= 1000)
+    id                  BIGSERIAL PRIMARY KEY,
+    entry_date          DATE NOT NULL,
+    notes               TEXT NOT NULL,
+    budget_category_id  BIGINT REFERENCES budget_category (id) ON DELETE SET NULL,
+    budget_vendor_id    BIGINT REFERENCES budget_vendor (id) ON DELETE SET NULL,
+    created_at          TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at          TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    CONSTRAINT chk_budget_entry_notes_len CHECK (char_length(notes) <= 1000)
 );
-CREATE INDEX IF NOT EXISTS idx_budget_entry_entry_date  ON budget_entry (entry_date);
+CREATE INDEX IF NOT EXISTS idx_budget_entry_entry_date ON budget_entry (entry_date);
 CREATE OR REPLACE TRIGGER trg_budget_entry_updated_at_before_update
     BEFORE UPDATE ON budget_entry
     FOR EACH ROW EXECUTE FUNCTION updated_at_now();

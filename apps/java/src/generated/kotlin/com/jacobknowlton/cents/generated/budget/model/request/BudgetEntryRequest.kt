@@ -7,6 +7,6 @@ import java.time.LocalDate
 data class BudgetEntryRequest(
     val entryDate: LocalDate,
     val notes: String,
-    val categoryId: Long? = null,
-    val vendorId: Long? = null,
+    val budgetCategoryId: Long? = null,
+    val budgetVendorId: Long? = null,
 )

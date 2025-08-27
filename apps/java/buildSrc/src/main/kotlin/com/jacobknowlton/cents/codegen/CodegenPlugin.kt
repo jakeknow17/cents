@@ -3,6 +3,7 @@ package com.jacobknowlton.cents.codegen
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
+@Suppress("unused")
 class CodegenPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         target.tasks.register("centsCodegen") {
@@ -12,7 +13,6 @@ class CodegenPlugin : Plugin<Project> {
             inputs.dir(inputDir)
             val outputRoot = target.layout.projectDirectory.dir("src/generated/kotlin/${basePackage.replace('.', '/')}")
             outputs.dir(outputRoot)
-
 
             doLast {
                 val inDir = inputDir.asFile
