@@ -20,5 +20,8 @@
   "homepage": "https://github.com/jakeknow17/cents#readme",
   "engines": {
     "node": "24.6.0"
+  },
+  "dependencies": {
+    "typescript": "^5.9.2"
   }
 }
