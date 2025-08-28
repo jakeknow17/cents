@@ -1,4 +1,7 @@
 {
+    "files.associations": {
+        "*.css": "tailwindcss"
+    },
     "java.compile.nullAnalysis.mode": "automatic",
     "typescript.tsdk": "node_modules/typescript/lib"
 }
