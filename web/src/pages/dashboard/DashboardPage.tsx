@@ -112,9 +112,10 @@ const DashboardPage = () => {
       <div className="bg-base-200 rounded-lg p-6">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-semibold">Budget Categories</h2>
+          {/* Open add modal button */}
           <button
             className="btn btn-primary btn-circle btn-sm"
-            onClick={() => setIsModalOpen(true)}
+            onClick={() => { setIsModalOpen(true); }}
           >
             <svg
               className="w-5 h-5"
@@ -163,7 +164,7 @@ const DashboardPage = () => {
                 <div className="w-full bg-base-300 rounded-full h-3">
                   <div
                     className={`h-3 rounded-full ${getProgressColor(category.spent, category.budgeted)} transition-all duration-300`}
-                    style={{ width: `${Math.min(percentage, 100)}%` }}
+                    style={{ width: `${Math.min(percentage, 100).toFixed(1)}%` }}
                   ></div>
                 </div>
 
@@ -183,7 +184,7 @@ const DashboardPage = () => {
       {/* Add Category Modal */}
       <AddCategoryModal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={() => { setIsModalOpen(false); }}
         onAdd={handleAddCategory}
       />
     </div>
