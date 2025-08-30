@@ -1,6 +1,8 @@
 import { useState } from "react";
 import type { BudgetCategory } from "../../types";
 import CategoryModal from "../../components/dashboard/CategoryModal";
+import AddButton from "../../shared/ui/buttons/AddButton";
+import { dummyCategories } from "../../shared/ui/dummy";
 
 const DashboardPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -9,50 +11,7 @@ const DashboardPage = () => {
   >(undefined);
   const [modalMode, setModalMode] = useState<"add" | "edit">("add");
   // Dummy data - in a real app this would come from your backend
-  const [budgetCategories, setBudgetCategories] = useState<BudgetCategory[]>([
-    {
-      id: "1",
-      name: "Food & Dining",
-      budgeted: 500,
-      spent: 320,
-      color: "#3b82f6", // blue-500
-    },
-    {
-      id: "2",
-      name: "Transportation",
-      budgeted: 200,
-      spent: 179,
-      color: "#f59e42", // orange-400
-    },
-    {
-      id: "3",
-      name: "Entertainment",
-      budgeted: 150,
-      spent: 75,
-      color: "#a21caf", // purple-700
-    },
-    {
-      id: "4",
-      name: "Shopping",
-      budgeted: 300,
-      spent: 420,
-      color: "#fbbf24", // yellow-400
-    },
-    {
-      id: "5",
-      name: "Utilities",
-      budgeted: 250,
-      spent: 245,
-      color: "#06b6d4", // cyan-500
-    },
-    {
-      id: "6",
-      name: "Healthcare",
-      budgeted: 100,
-      spent: 45,
-      color: "#22c55e", // green-500
-    },
-  ]);
+  const [budgetCategories, setBudgetCategories] = useState<BudgetCategory[]>(dummyCategories);
 
   const totalBudgeted = budgetCategories.reduce(
     (sum, cat) => sum + cat.budgeted,
@@ -78,7 +37,7 @@ const DashboardPage = () => {
   const handleAddCategory = (newCategory: Omit<BudgetCategory, "id">) => {
     const category: BudgetCategory = {
       ...newCategory,
-      id: Date.now().toString(), // Simple ID generation for demo
+      id: Math.max(0, ...budgetCategories.map(cat => cat.id)) + 1,
     };
     console.log(category);
     setBudgetCategories([...budgetCategories, category]);
@@ -141,25 +100,7 @@ const DashboardPage = () => {
       <div className="bg-base-200 rounded-lg p-6">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-semibold">Budget Categories</h2>
-          {/* Open add modal button */}
-          <button
-            className="btn btn-primary btn-circle btn-sm"
-            onClick={openAddModal}
-          >
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-              ></path>
-            </svg>
-          </button>
+          <AddButton onClick={openAddModal} />
         </div>
         <div className="space-y-4">
           {budgetCategories.map((category) => {

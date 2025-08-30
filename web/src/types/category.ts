@@ -1,5 +1,5 @@
 export interface BudgetCategory {
-  id: string;
+  id: number;
   name: string;
   budgeted: number;
   spent: number;
