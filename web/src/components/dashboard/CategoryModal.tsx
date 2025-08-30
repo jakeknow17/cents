@@ -1,4 +1,5 @@
 import { useForm } from "react-hook-form";
+import { useEffect } from "react";
 import type { BudgetCategory } from "../../types";
 
 interface FormData {
@@ -7,22 +8,29 @@ interface FormData {
   color: string;
 }
 
-interface AddCategoryModalProps {
+interface CategoryModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAdd: (category: Omit<BudgetCategory, "id">) => void;
+  mode: "add" | "edit";
+  category?: BudgetCategory; // Required when mode is "edit"
+  onAdd?: (category: Omit<BudgetCategory, "id">) => void;
+  onEdit?: (category: BudgetCategory) => void;
 }
 
-const AddCategoryModal = ({
+const defaultValues = {
+  name: "",
+  budgeted: "",
+  color: "#3388ff",
+};
+
+const CategoryModal = ({
   isOpen,
   onClose,
+  mode,
+  category,
   onAdd,
-}: AddCategoryModalProps) => {
-  const defaultValues = {
-    name: "",
-    budgeted: "",
-    color: "#3388ff",
-  };
+  onEdit,
+}: CategoryModalProps) => {
   const {
     register,
     handleSubmit,
@@ -32,14 +40,37 @@ const AddCategoryModal = ({
     defaultValues: defaultValues,
   });
 
+  // Reset form when modal opens/closes or mode changes
+  useEffect(() => {
+    if (isOpen) {
+      if (mode === "edit" && category) {
+        reset({
+          name: category.name,
+          budgeted: category.budgeted.toFixed(2),
+          color: category.color,
+        });
+      } else {
+        reset(defaultValues);
+      }
+    }
+  }, [isOpen, mode, category, reset]);
+
   const onSubmit = (data: FormData) => {
-    console.log(data.color);
-    onAdd({
-      name: data.name,
-      budgeted: parseFloat(data.budgeted),
-      spent: 0,
-      color: data.color,
-    });
+    if (mode === "add" && onAdd) {
+      onAdd({
+        name: data.name,
+        budgeted: parseFloat(data.budgeted),
+        spent: 0,
+        color: data.color,
+      });
+    } else if (mode === "edit" && onEdit && category) {
+      onEdit({
+        ...category,
+        name: data.name,
+        budgeted: parseFloat(data.budgeted),
+        color: data.color,
+      });
+    }
     reset(defaultValues);
     onClose();
   };
@@ -51,12 +82,20 @@ const AddCategoryModal = ({
 
   if (!isOpen) return null;
 
+  const isEditMode = mode === "edit";
+  const title = isEditMode ? "Edit Budget Category" : "Add New Budget Category";
+  const submitText = isEditMode ? "Update Category" : "Add Category";
+  const loadingText = isEditMode ? "Updating..." : "Adding...";
+
   return (
     <div className="modal modal-open">
       <div className="modal-box">
-        <h3 className="font-bold text-lg mb-4">Add New Budget Category</h3>
+        <h3 className="font-bold text-lg mb-4">{title}</h3>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form
+          onSubmit={(e) => void handleSubmit(onSubmit)(e)}
+          className="space-y-4"
+        >
           <div className="form-control">
             <label className="label">
               <span className="label-text">Category Name</span>
@@ -129,10 +168,10 @@ const AddCategoryModal = ({
               {isSubmitting ? (
                 <>
                   <span className="loading loading-spinner loading-sm"></span>
-                  Adding...
+                  {loadingText}
                 </>
               ) : (
-                "Add Category"
+                submitText
               )}
             </button>
           </div>
@@ -144,4 +183,4 @@ const AddCategoryModal = ({
   );
 };
 
-export default AddCategoryModal;
+export default CategoryModal;

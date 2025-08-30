@@ -1,9 +1,13 @@
 import { useState } from "react";
 import type { BudgetCategory } from "../../types";
-import AddCategoryModal from "../../components/dashboard/AddCategoryModal";
+import CategoryModal from "../../components/dashboard/CategoryModal";
 
 const DashboardPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingCategory, setEditingCategory] = useState<
+    BudgetCategory | undefined
+  >(undefined);
+  const [modalMode, setModalMode] = useState<"add" | "edit">("add");
   // Dummy data - in a real app this would come from your backend
   const [budgetCategories, setBudgetCategories] = useState<BudgetCategory[]>([
     {
@@ -80,6 +84,31 @@ const DashboardPage = () => {
     setBudgetCategories([...budgetCategories, category]);
   };
 
+  const handleEditCategory = (updatedCategory: BudgetCategory) => {
+    setBudgetCategories(
+      budgetCategories.map((cat) =>
+        cat.id === updatedCategory.id ? updatedCategory : cat,
+      ),
+    );
+  };
+
+  const openAddModal = () => {
+    setModalMode("add");
+    setEditingCategory(undefined);
+    setIsModalOpen(true);
+  };
+
+  const openEditModal = (category: BudgetCategory) => {
+    setModalMode("edit");
+    setEditingCategory(category);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setEditingCategory(undefined);
+  };
+
   return (
     <div className="py-6">
       <h1 className="text-3xl font-bold mb-6">Budget Dashboard</h1>
@@ -115,7 +144,7 @@ const DashboardPage = () => {
           {/* Open add modal button */}
           <button
             className="btn btn-primary btn-circle btn-sm"
-            onClick={() => { setIsModalOpen(true); }}
+            onClick={openAddModal}
           >
             <svg
               className="w-5 h-5"
@@ -140,7 +169,12 @@ const DashboardPage = () => {
             return (
               <div key={category.id} className="bg-base-100 rounded-lg p-4">
                 <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center space-x-3">
+                  <div
+                    className="flex items-center space-x-3 btn btn-ghost"
+                    onClick={() => {
+                      openEditModal(category);
+                    }}
+                  >
                     <div
                       className="w-4 h-4 rounded-full"
                       style={{ backgroundColor: category.color }}
@@ -164,7 +198,9 @@ const DashboardPage = () => {
                 <div className="w-full bg-base-300 rounded-full h-3">
                   <div
                     className={`h-3 rounded-full ${getProgressColor(category.spent, category.budgeted)} transition-all duration-300`}
-                    style={{ width: `${Math.min(percentage, 100).toFixed(1)}%` }}
+                    style={{
+                      width: `${Math.min(percentage, 100).toFixed(1)}%`,
+                    }}
                   ></div>
                 </div>
 
@@ -181,11 +217,14 @@ const DashboardPage = () => {
         </div>
       </div>
 
-      {/* Add Category Modal */}
-      <AddCategoryModal
+      {/* Category Modal */}
+      <CategoryModal
         isOpen={isModalOpen}
-        onClose={() => { setIsModalOpen(false); }}
+        onClose={closeModal}
+        mode={modalMode}
+        category={editingCategory}
         onAdd={handleAddCategory}
+        onEdit={handleEditCategory}
       />
     </div>
   );
