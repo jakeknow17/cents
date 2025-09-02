@@ -1,8 +1,8 @@
 import { useState } from "react";
-import type { BudgetCategory } from "../../types";
+import type { BudgetCategory, Transaction } from "../../types";
 import CategoryModal from "../../components/dashboard/CategoryModal";
 import AddButton from "../../shared/ui/buttons/AddButton";
-import { dummyCategories } from "../../shared/ui/dummy";
+import { dummyCategories, dummyTransactions } from "../../shared/ui/dummy";
 
 const DashboardPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -11,13 +11,34 @@ const DashboardPage = () => {
   >(undefined);
   const [modalMode, setModalMode] = useState<"add" | "edit">("add");
   // Dummy data - in a real app this would come from your backend
-  const [budgetCategories, setBudgetCategories] = useState<BudgetCategory[]>(dummyCategories);
+  const [budgetCategories, setBudgetCategories] =
+    useState<BudgetCategory[]>(dummyCategories);
+  const [transactions] = useState<Transaction[]>(dummyTransactions);
+
+  // Calculate spent amounts for each category based on transactions
+  const categoriesWithSpent = budgetCategories.map((category) => {
+    const spent = transactions
+      .filter(
+        (transaction) =>
+          transaction.categoryId === category.id &&
+          transaction.type === "expense",
+      )
+      .reduce((sum, transaction) => sum + Math.abs(transaction.amount), 0);
+
+    return {
+      ...category,
+      spent,
+    };
+  });
 
   const totalBudgeted = budgetCategories.reduce(
     (sum, cat) => sum + cat.budgeted,
     0,
   );
-  const totalSpent = budgetCategories.reduce((sum, cat) => sum + cat.spent, 0);
+  const totalSpent = categoriesWithSpent.reduce(
+    (sum, cat) => sum + cat.spent,
+    0,
+  );
   const remaining = totalBudgeted - totalSpent;
 
   const getProgressColor = (spent: number, budgeted: number) => {
@@ -37,7 +58,7 @@ const DashboardPage = () => {
   const handleAddCategory = (newCategory: Omit<BudgetCategory, "id">) => {
     const category: BudgetCategory = {
       ...newCategory,
-      id: Math.max(0, ...budgetCategories.map(cat => cat.id)) + 1,
+      id: Math.max(0, ...budgetCategories.map((cat) => cat.id)) + 1,
     };
     console.log(category);
     setBudgetCategories([...budgetCategories, category]);
@@ -103,7 +124,7 @@ const DashboardPage = () => {
           <AddButton onClick={openAddModal} />
         </div>
         <div className="space-y-4">
-          {budgetCategories.map((category) => {
+          {categoriesWithSpent.map((category) => {
             const percentage = (category.spent / category.budgeted) * 100;
             const isOverBudget = category.spent > category.budgeted;
 

@@ -1,12 +1,8 @@
 package com.jacobknowlton.cents.budget.controller
 
-import com.jacobknowlton.cents.generated.budget.model.BudgetVendor
-import com.jacobknowlton.cents.budget.model.requests.BudgetVendorRequest
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 

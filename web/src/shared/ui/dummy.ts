@@ -5,43 +5,43 @@ export const dummyCategories: BudgetCategory[] = [
     id: 1,
     name: "Food & Dining",
     budgeted: 500,
-    spent: 320,
     color: "#3b82f6",
   },
   {
     id: 2, 
     name: "Transportation",
     budgeted: 200,
-    spent: 179,
     color: "#f59e42",
   },
   {
     id: 3,
     name: "Entertainment",
     budgeted: 150,
-    spent: 75,
     color: "#a21caf",
   },
   {
     id: 4,
     name: "Shopping",
     budgeted: 300,
-    spent: 420,
     color: "#fbbf24",
   },
   {
     id: 5,
     name: "Utilities",
     budgeted: 250,
-    spent: 245,
     color: "#06b6d4",
   },
   {
     id: 6,
     name: "Healthcare",
     budgeted: 100,
-    spent: 45,
     color: "#22c55e",
+  },
+  {
+    id: 7,
+    name: "Income",
+    budgeted: 1000,
+    color: "#10b981",
   },
 ];
 
@@ -81,7 +81,7 @@ export const dummyTransactions: Transaction[] = [
     id: 2,
     description: "Salary deposit",
     vendorId: 2,
-    categoryId: 1, // Using Food & Dining as a placeholder since we don't have Income category in dashboard
+    categoryId: 7, // Using Food & Dining as a placeholder since we don't have Income category in dashboard
     amount: 4500.00,
     date: "2024-01-15",
     type: "income",
@@ -147,20 +147,20 @@ export const dummyTransactions: Transaction[] = [
     recurring: true,
     status: "completed",
   },
-  {
-    id: 7,
-    description: "Freelance project",
-    vendorId: 7,
-    categoryId: 1, // Using Food & Dining as a placeholder since we don't have Income category in dashboard
-    amount: 1200.00,
-    date: "2024-01-08",
-    type: "income",
-    notes: "Logo design project completion",
-    tags: ["freelance", "design"],
-    accountId: 1,
-    recurring: false,
-    status: "completed",
-  },
+      {
+      id: 7,
+      description: "Freelance project",
+      vendorId: 7,
+      categoryId: 7, // Income category
+      amount: 1200.00,
+      date: "2024-01-08",
+      type: "income",
+      notes: "Logo design project completion",
+      tags: ["freelance", "design"],
+      accountId: 1,
+      recurring: false,
+      status: "completed",
+    },
   {
     id: 8,
     description: "Amazon purchase",

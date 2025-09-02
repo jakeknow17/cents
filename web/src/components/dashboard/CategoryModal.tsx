@@ -60,7 +60,6 @@ const CategoryModal = ({
       onAdd({
         name: data.name,
         budgeted: parseFloat(data.budgeted),
-        spent: 0,
         color: data.color,
       });
     } else if (mode === "edit" && onEdit && category) {

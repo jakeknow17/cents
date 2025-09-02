@@ -1,0 +1,15 @@
+
+**/.DS_Store
+**/.env
+**/.env.*
+
+**/.vscode/
+**/.idea/
+
+**/node_modules/
+web/node_modules/
+web/dist/
+
+**/npm-debug.log*
+**/yarn-error.log*
+**/pnpm-debug.log*
