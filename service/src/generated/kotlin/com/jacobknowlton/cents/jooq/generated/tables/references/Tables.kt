@@ -5,11 +5,19 @@
 package com.jacobknowlton.cents.jooq.generated.tables.references
 
 
+import com.jacobknowlton.cents.jooq.generated.tables.JBudgetAccount
 import com.jacobknowlton.cents.jooq.generated.tables.JBudgetCategory
-import com.jacobknowlton.cents.jooq.generated.tables.JBudgetEntry
+import com.jacobknowlton.cents.jooq.generated.tables.JBudgetTag
+import com.jacobknowlton.cents.jooq.generated.tables.JBudgetTransaction
+import com.jacobknowlton.cents.jooq.generated.tables.JBudgetTransactionTag
 import com.jacobknowlton.cents.jooq.generated.tables.JBudgetVendor
 
 
+
+/**
+ * The table <code>public.budget_account</code>.
+ */
+val BUDGET_ACCOUNT: JBudgetAccount = JBudgetAccount.BUDGET_ACCOUNT
 
 /**
  * The table <code>public.budget_category</code>.
@@ -17,9 +25,19 @@ import com.jacobknowlton.cents.jooq.generated.tables.JBudgetVendor
 val BUDGET_CATEGORY: JBudgetCategory = JBudgetCategory.BUDGET_CATEGORY
 
 /**
- * The table <code>public.budget_entry</code>.
+ * The table <code>public.budget_tag</code>.
  */
-val BUDGET_ENTRY: JBudgetEntry = JBudgetEntry.BUDGET_ENTRY
+val BUDGET_TAG: JBudgetTag = JBudgetTag.BUDGET_TAG
+
+/**
+ * The table <code>public.budget_transaction</code>.
+ */
+val BUDGET_TRANSACTION: JBudgetTransaction = JBudgetTransaction.BUDGET_TRANSACTION
+
+/**
+ * The table <code>public.budget_transaction_tag</code>.
+ */
+val BUDGET_TRANSACTION_TAG: JBudgetTransactionTag = JBudgetTransactionTag.BUDGET_TRANSACTION_TAG
 
 /**
  * The table <code>public.budget_vendor</code>.

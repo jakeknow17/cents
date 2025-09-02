@@ -5,4 +5,5 @@ package com.jacobknowlton.cents.generated.budget.model.request
 
 data class BudgetVendorRequest(
     val name: String,
+    val link: String? = null,
 )

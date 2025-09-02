@@ -5,8 +5,11 @@
 package com.jacobknowlton.cents.jooq.generated.indexes
 
 
+import com.jacobknowlton.cents.jooq.generated.tables.JBudgetAccount
 import com.jacobknowlton.cents.jooq.generated.tables.JBudgetCategory
-import com.jacobknowlton.cents.jooq.generated.tables.JBudgetEntry
+import com.jacobknowlton.cents.jooq.generated.tables.JBudgetTag
+import com.jacobknowlton.cents.jooq.generated.tables.JBudgetTransaction
+import com.jacobknowlton.cents.jooq.generated.tables.JBudgetTransactionTag
 import com.jacobknowlton.cents.jooq.generated.tables.JBudgetVendor
 
 import org.jooq.Index
@@ -19,6 +22,12 @@ import org.jooq.impl.Internal
 // INDEX definitions
 // -------------------------------------------------------------------------
 
+val IDX_BUDGET_ACCOUNT_NAME: Index = Internal.createIndex(DSL.name("idx_budget_account_name"), JBudgetAccount.BUDGET_ACCOUNT, arrayOf(JBudgetAccount.BUDGET_ACCOUNT.NAME), false)
 val IDX_BUDGET_CATEGORY_NAME: Index = Internal.createIndex(DSL.name("idx_budget_category_name"), JBudgetCategory.BUDGET_CATEGORY, arrayOf(JBudgetCategory.BUDGET_CATEGORY.NAME), false)
-val IDX_BUDGET_ENTRY_ENTRY_DATE: Index = Internal.createIndex(DSL.name("idx_budget_entry_entry_date"), JBudgetEntry.BUDGET_ENTRY, arrayOf(JBudgetEntry.BUDGET_ENTRY.ENTRY_DATE), false)
+val IDX_BUDGET_TAG_NAME: Index = Internal.createIndex(DSL.name("idx_budget_tag_name"), JBudgetTag.BUDGET_TAG, arrayOf(JBudgetTag.BUDGET_TAG.NAME), false)
+val IDX_BUDGET_TRANSACTION_DATE: Index = Internal.createIndex(DSL.name("idx_budget_transaction_date"), JBudgetTransaction.BUDGET_TRANSACTION, arrayOf(JBudgetTransaction.BUDGET_TRANSACTION.TRANSACTION_DATE), false)
+val IDX_BUDGET_TRANSACTION_DESCRIPTION: Index = Internal.createIndex(DSL.name("idx_budget_transaction_description"), JBudgetTransaction.BUDGET_TRANSACTION, arrayOf(JBudgetTransaction.BUDGET_TRANSACTION.DESCRIPTION), false)
+val IDX_BUDGET_TRANSACTION_NOTES: Index = Internal.createIndex(DSL.name("idx_budget_transaction_notes"), JBudgetTransaction.BUDGET_TRANSACTION, arrayOf(JBudgetTransaction.BUDGET_TRANSACTION.NOTES), false)
+val IDX_BUDGET_TRANSACTION_TAG_TAG_ID: Index = Internal.createIndex(DSL.name("idx_budget_transaction_tag_tag_id"), JBudgetTransactionTag.BUDGET_TRANSACTION_TAG, arrayOf(JBudgetTransactionTag.BUDGET_TRANSACTION_TAG.BUDGET_TAG_ID), false)
+val IDX_BUDGET_TRANSACTION_TAG_TRANSACTION_ID: Index = Internal.createIndex(DSL.name("idx_budget_transaction_tag_transaction_id"), JBudgetTransactionTag.BUDGET_TRANSACTION_TAG, arrayOf(JBudgetTransactionTag.BUDGET_TRANSACTION_TAG.BUDGET_TRANSACTION_ID), false)
 val IDX_BUDGET_VENDOR_NAME: Index = Internal.createIndex(DSL.name("idx_budget_vendor_name"), JBudgetVendor.BUDGET_VENDOR, arrayOf(JBudgetVendor.BUDGET_VENDOR.NAME), false)

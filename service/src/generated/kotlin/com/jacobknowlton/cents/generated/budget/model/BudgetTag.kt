@@ -4,7 +4,7 @@ package com.jacobknowlton.cents.generated.budget.model
 
 import java.time.OffsetDateTime
 
-data class BudgetTags(
+data class BudgetTag(
     val id: Long,
     val name: String,
     val createdAt: OffsetDateTime? = null,

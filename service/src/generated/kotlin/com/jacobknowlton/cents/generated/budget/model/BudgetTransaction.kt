@@ -13,7 +13,7 @@ data class BudgetTransaction(
     val type: Type,
     val description: String,
     val notes: String,
-    val budgetTags: List<BudgetTags>,
+    val budgetTags: List<BudgetTag>,
     val budgetCategory: BudgetCategory? = null,
     val budgetVendor: BudgetVendor? = null,
     val budgetAccount: BudgetAccount? = null,

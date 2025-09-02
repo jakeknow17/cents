@@ -27,17 +27,21 @@ open class JBudgetCategoryRecord() : UpdatableRecordImpl<JBudgetCategoryRecord>(
         set(value): Unit = set(1, value)
         get(): String? = get(1) as String?
 
-    open var budgetLimit: BigDecimal?
+    open var amount: BigDecimal?
         set(value): Unit = set(2, value)
         get(): BigDecimal? = get(2) as BigDecimal?
 
-    open var createdAt: OffsetDateTime?
+    open var color: String?
         set(value): Unit = set(3, value)
-        get(): OffsetDateTime? = get(3) as OffsetDateTime?
+        get(): String? = get(3) as String?
 
-    open var updatedAt: OffsetDateTime?
+    open var createdAt: OffsetDateTime?
         set(value): Unit = set(4, value)
         get(): OffsetDateTime? = get(4) as OffsetDateTime?
+
+    open var updatedAt: OffsetDateTime?
+        set(value): Unit = set(5, value)
+        get(): OffsetDateTime? = get(5) as OffsetDateTime?
 
     // -------------------------------------------------------------------------
     // Primary key information
@@ -48,10 +52,11 @@ open class JBudgetCategoryRecord() : UpdatableRecordImpl<JBudgetCategoryRecord>(
     /**
      * Create a detached, initialised JBudgetCategoryRecord
      */
-    constructor(id: Long? = null, name: String? = null, budgetLimit: BigDecimal? = null, createdAt: OffsetDateTime? = null, updatedAt: OffsetDateTime? = null): this() {
+    constructor(id: Long? = null, name: String? = null, amount: BigDecimal? = null, color: String? = null, createdAt: OffsetDateTime? = null, updatedAt: OffsetDateTime? = null): this() {
         this.id = id
         this.name = name
-        this.budgetLimit = budgetLimit
+        this.amount = amount
+        this.color = color
         this.createdAt = createdAt
         this.updatedAt = updatedAt
         resetTouchedOnNotNull()

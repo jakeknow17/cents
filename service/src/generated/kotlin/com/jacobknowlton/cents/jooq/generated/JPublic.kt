@@ -4,8 +4,11 @@
 package com.jacobknowlton.cents.jooq.generated
 
 
+import com.jacobknowlton.cents.jooq.generated.tables.JBudgetAccount
 import com.jacobknowlton.cents.jooq.generated.tables.JBudgetCategory
-import com.jacobknowlton.cents.jooq.generated.tables.JBudgetEntry
+import com.jacobknowlton.cents.jooq.generated.tables.JBudgetTag
+import com.jacobknowlton.cents.jooq.generated.tables.JBudgetTransaction
+import com.jacobknowlton.cents.jooq.generated.tables.JBudgetTransactionTag
 import com.jacobknowlton.cents.jooq.generated.tables.JBudgetVendor
 
 import kotlin.collections.List
@@ -30,14 +33,29 @@ open class JPublic : SchemaImpl(DSL.name("public"), DefaultCatalog.DEFAULT_CATAL
     }
 
     /**
+     * The table <code>public.budget_account</code>.
+     */
+    val BUDGET_ACCOUNT: JBudgetAccount get() = JBudgetAccount.BUDGET_ACCOUNT
+
+    /**
      * The table <code>public.budget_category</code>.
      */
     val BUDGET_CATEGORY: JBudgetCategory get() = JBudgetCategory.BUDGET_CATEGORY
 
     /**
-     * The table <code>public.budget_entry</code>.
+     * The table <code>public.budget_tag</code>.
      */
-    val BUDGET_ENTRY: JBudgetEntry get() = JBudgetEntry.BUDGET_ENTRY
+    val BUDGET_TAG: JBudgetTag get() = JBudgetTag.BUDGET_TAG
+
+    /**
+     * The table <code>public.budget_transaction</code>.
+     */
+    val BUDGET_TRANSACTION: JBudgetTransaction get() = JBudgetTransaction.BUDGET_TRANSACTION
+
+    /**
+     * The table <code>public.budget_transaction_tag</code>.
+     */
+    val BUDGET_TRANSACTION_TAG: JBudgetTransactionTag get() = JBudgetTransactionTag.BUDGET_TRANSACTION_TAG
 
     /**
      * The table <code>public.budget_vendor</code>.
@@ -47,8 +65,11 @@ open class JPublic : SchemaImpl(DSL.name("public"), DefaultCatalog.DEFAULT_CATAL
     override fun getCatalog(): Catalog = DefaultCatalog.DEFAULT_CATALOG
 
     override fun getTables(): List<Table<*>> = listOf(
+        JBudgetAccount.BUDGET_ACCOUNT,
         JBudgetCategory.BUDGET_CATEGORY,
-        JBudgetEntry.BUDGET_ENTRY,
+        JBudgetTag.BUDGET_TAG,
+        JBudgetTransaction.BUDGET_TRANSACTION,
+        JBudgetTransactionTag.BUDGET_TRANSACTION_TAG,
         JBudgetVendor.BUDGET_VENDOR
     )
 }

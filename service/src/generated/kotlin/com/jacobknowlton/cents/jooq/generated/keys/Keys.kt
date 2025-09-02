@@ -5,11 +5,17 @@
 package com.jacobknowlton.cents.jooq.generated.keys
 
 
+import com.jacobknowlton.cents.jooq.generated.tables.JBudgetAccount
 import com.jacobknowlton.cents.jooq.generated.tables.JBudgetCategory
-import com.jacobknowlton.cents.jooq.generated.tables.JBudgetEntry
+import com.jacobknowlton.cents.jooq.generated.tables.JBudgetTag
+import com.jacobknowlton.cents.jooq.generated.tables.JBudgetTransaction
+import com.jacobknowlton.cents.jooq.generated.tables.JBudgetTransactionTag
 import com.jacobknowlton.cents.jooq.generated.tables.JBudgetVendor
+import com.jacobknowlton.cents.jooq.generated.tables.records.JBudgetAccountRecord
 import com.jacobknowlton.cents.jooq.generated.tables.records.JBudgetCategoryRecord
-import com.jacobknowlton.cents.jooq.generated.tables.records.JBudgetEntryRecord
+import com.jacobknowlton.cents.jooq.generated.tables.records.JBudgetTagRecord
+import com.jacobknowlton.cents.jooq.generated.tables.records.JBudgetTransactionRecord
+import com.jacobknowlton.cents.jooq.generated.tables.records.JBudgetTransactionTagRecord
 import com.jacobknowlton.cents.jooq.generated.tables.records.JBudgetVendorRecord
 
 import org.jooq.ForeignKey
@@ -24,9 +30,14 @@ import org.jooq.impl.QOM.ForeignKeyRule
 // UNIQUE and PRIMARY KEY definitions
 // -------------------------------------------------------------------------
 
+val BUDGET_ACCOUNT_PKEY: UniqueKey<JBudgetAccountRecord> = Internal.createUniqueKey(JBudgetAccount.BUDGET_ACCOUNT, DSL.name("budget_account_pkey"), arrayOf(JBudgetAccount.BUDGET_ACCOUNT.ID), true)
+val UNQ_BUDGET_ACCOUNT_NAME: UniqueKey<JBudgetAccountRecord> = Internal.createUniqueKey(JBudgetAccount.BUDGET_ACCOUNT, DSL.name("unq_budget_account_name"), arrayOf(JBudgetAccount.BUDGET_ACCOUNT.NAME), true)
 val BUDGET_CATEGORY_PKEY: UniqueKey<JBudgetCategoryRecord> = Internal.createUniqueKey(JBudgetCategory.BUDGET_CATEGORY, DSL.name("budget_category_pkey"), arrayOf(JBudgetCategory.BUDGET_CATEGORY.ID), true)
 val UNQ_BUDGET_CATEGORY_NAME: UniqueKey<JBudgetCategoryRecord> = Internal.createUniqueKey(JBudgetCategory.BUDGET_CATEGORY, DSL.name("unq_budget_category_name"), arrayOf(JBudgetCategory.BUDGET_CATEGORY.NAME), true)
-val BUDGET_ENTRY_PKEY: UniqueKey<JBudgetEntryRecord> = Internal.createUniqueKey(JBudgetEntry.BUDGET_ENTRY, DSL.name("budget_entry_pkey"), arrayOf(JBudgetEntry.BUDGET_ENTRY.ID), true)
+val BUDGET_TAG_PKEY: UniqueKey<JBudgetTagRecord> = Internal.createUniqueKey(JBudgetTag.BUDGET_TAG, DSL.name("budget_tag_pkey"), arrayOf(JBudgetTag.BUDGET_TAG.ID), true)
+val UNQ_BUDGET_TAG_NAME: UniqueKey<JBudgetTagRecord> = Internal.createUniqueKey(JBudgetTag.BUDGET_TAG, DSL.name("unq_budget_tag_name"), arrayOf(JBudgetTag.BUDGET_TAG.NAME), true)
+val BUDGET_TRANSACTION_PKEY: UniqueKey<JBudgetTransactionRecord> = Internal.createUniqueKey(JBudgetTransaction.BUDGET_TRANSACTION, DSL.name("budget_transaction_pkey"), arrayOf(JBudgetTransaction.BUDGET_TRANSACTION.ID), true)
+val PK_BUDGET_TRANSACTION_TAG: UniqueKey<JBudgetTransactionTagRecord> = Internal.createUniqueKey(JBudgetTransactionTag.BUDGET_TRANSACTION_TAG, DSL.name("pk_budget_transaction_tag"), arrayOf(JBudgetTransactionTag.BUDGET_TRANSACTION_TAG.BUDGET_TRANSACTION_ID, JBudgetTransactionTag.BUDGET_TRANSACTION_TAG.BUDGET_TAG_ID), true)
 val BUDGET_VENDOR_PKEY: UniqueKey<JBudgetVendorRecord> = Internal.createUniqueKey(JBudgetVendor.BUDGET_VENDOR, DSL.name("budget_vendor_pkey"), arrayOf(JBudgetVendor.BUDGET_VENDOR.ID), true)
 val UNQ_BUDGET_VENDOR_NAME: UniqueKey<JBudgetVendorRecord> = Internal.createUniqueKey(JBudgetVendor.BUDGET_VENDOR, DSL.name("unq_budget_vendor_name"), arrayOf(JBudgetVendor.BUDGET_VENDOR.NAME), true)
 
@@ -34,5 +45,8 @@ val UNQ_BUDGET_VENDOR_NAME: UniqueKey<JBudgetVendorRecord> = Internal.createUniq
 // FOREIGN KEY definitions
 // -------------------------------------------------------------------------
 
-val BUDGET_ENTRY__BUDGET_ENTRY_CATEGORY_ID_FKEY: ForeignKey<JBudgetEntryRecord, JBudgetCategoryRecord> = Internal.createForeignKey(JBudgetEntry.BUDGET_ENTRY, DSL.name("budget_entry_category_id_fkey"), arrayOf(JBudgetEntry.BUDGET_ENTRY.CATEGORY_ID), com.jacobknowlton.cents.jooq.generated.keys.BUDGET_CATEGORY_PKEY, arrayOf(JBudgetCategory.BUDGET_CATEGORY.ID), true, ForeignKeyRule.SET_NULL, ForeignKeyRule.NO_ACTION)
-val BUDGET_ENTRY__BUDGET_ENTRY_VENDOR_ID_FKEY: ForeignKey<JBudgetEntryRecord, JBudgetVendorRecord> = Internal.createForeignKey(JBudgetEntry.BUDGET_ENTRY, DSL.name("budget_entry_vendor_id_fkey"), arrayOf(JBudgetEntry.BUDGET_ENTRY.VENDOR_ID), com.jacobknowlton.cents.jooq.generated.keys.BUDGET_VENDOR_PKEY, arrayOf(JBudgetVendor.BUDGET_VENDOR.ID), true, ForeignKeyRule.SET_NULL, ForeignKeyRule.NO_ACTION)
+val BUDGET_TRANSACTION__BUDGET_TRANSACTION_BUDGET_ACCOUNT_ID_FKEY: ForeignKey<JBudgetTransactionRecord, JBudgetAccountRecord> = Internal.createForeignKey(JBudgetTransaction.BUDGET_TRANSACTION, DSL.name("budget_transaction_budget_account_id_fkey"), arrayOf(JBudgetTransaction.BUDGET_TRANSACTION.BUDGET_ACCOUNT_ID), com.jacobknowlton.cents.jooq.generated.keys.BUDGET_ACCOUNT_PKEY, arrayOf(JBudgetAccount.BUDGET_ACCOUNT.ID), true, ForeignKeyRule.SET_NULL, ForeignKeyRule.NO_ACTION)
+val BUDGET_TRANSACTION__BUDGET_TRANSACTION_BUDGET_CATEGORY_ID_FKEY: ForeignKey<JBudgetTransactionRecord, JBudgetCategoryRecord> = Internal.createForeignKey(JBudgetTransaction.BUDGET_TRANSACTION, DSL.name("budget_transaction_budget_category_id_fkey"), arrayOf(JBudgetTransaction.BUDGET_TRANSACTION.BUDGET_CATEGORY_ID), com.jacobknowlton.cents.jooq.generated.keys.BUDGET_CATEGORY_PKEY, arrayOf(JBudgetCategory.BUDGET_CATEGORY.ID), true, ForeignKeyRule.SET_NULL, ForeignKeyRule.NO_ACTION)
+val BUDGET_TRANSACTION__BUDGET_TRANSACTION_BUDGET_VENDOR_ID_FKEY: ForeignKey<JBudgetTransactionRecord, JBudgetVendorRecord> = Internal.createForeignKey(JBudgetTransaction.BUDGET_TRANSACTION, DSL.name("budget_transaction_budget_vendor_id_fkey"), arrayOf(JBudgetTransaction.BUDGET_TRANSACTION.BUDGET_VENDOR_ID), com.jacobknowlton.cents.jooq.generated.keys.BUDGET_VENDOR_PKEY, arrayOf(JBudgetVendor.BUDGET_VENDOR.ID), true, ForeignKeyRule.SET_NULL, ForeignKeyRule.NO_ACTION)
+val BUDGET_TRANSACTION_TAG__BUDGET_TRANSACTION_TAG_BUDGET_TAG_ID_FKEY: ForeignKey<JBudgetTransactionTagRecord, JBudgetTagRecord> = Internal.createForeignKey(JBudgetTransactionTag.BUDGET_TRANSACTION_TAG, DSL.name("budget_transaction_tag_budget_tag_id_fkey"), arrayOf(JBudgetTransactionTag.BUDGET_TRANSACTION_TAG.BUDGET_TAG_ID), com.jacobknowlton.cents.jooq.generated.keys.BUDGET_TAG_PKEY, arrayOf(JBudgetTag.BUDGET_TAG.ID), true, ForeignKeyRule.CASCADE, ForeignKeyRule.NO_ACTION)
+val BUDGET_TRANSACTION_TAG__BUDGET_TRANSACTION_TAG_BUDGET_TRANSACTION_ID_FKEY: ForeignKey<JBudgetTransactionTagRecord, JBudgetTransactionRecord> = Internal.createForeignKey(JBudgetTransactionTag.BUDGET_TRANSACTION_TAG, DSL.name("budget_transaction_tag_budget_transaction_id_fkey"), arrayOf(JBudgetTransactionTag.BUDGET_TRANSACTION_TAG.BUDGET_TRANSACTION_ID), com.jacobknowlton.cents.jooq.generated.keys.BUDGET_TRANSACTION_PKEY, arrayOf(JBudgetTransaction.BUDGET_TRANSACTION.ID), true, ForeignKeyRule.CASCADE, ForeignKeyRule.NO_ACTION)

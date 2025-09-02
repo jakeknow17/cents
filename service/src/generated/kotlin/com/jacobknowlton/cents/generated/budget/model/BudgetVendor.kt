@@ -7,6 +7,7 @@ import java.time.OffsetDateTime
 data class BudgetVendor(
     val id: Long,
     val name: String,
+    val link: String? = null,
     val createdAt: OffsetDateTime? = null,
     val updatedAt: OffsetDateTime? = null,
 )

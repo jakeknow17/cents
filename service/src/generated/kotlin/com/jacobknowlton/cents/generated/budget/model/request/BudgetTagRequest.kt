@@ -3,6 +3,6 @@
 package com.jacobknowlton.cents.generated.budget.model.request
 
 
-data class BudgetTagsRequest(
+data class BudgetTagRequest(
     val name: String,
 )

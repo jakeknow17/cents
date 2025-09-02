@@ -7,9 +7,9 @@ package com.jacobknowlton.cents.jooq.generated.tables
 import com.jacobknowlton.cents.jooq.generated.JPublic
 import com.jacobknowlton.cents.jooq.generated.indexes.IDX_BUDGET_CATEGORY_NAME
 import com.jacobknowlton.cents.jooq.generated.keys.BUDGET_CATEGORY_PKEY
-import com.jacobknowlton.cents.jooq.generated.keys.BUDGET_ENTRY__BUDGET_ENTRY_CATEGORY_ID_FKEY
+import com.jacobknowlton.cents.jooq.generated.keys.BUDGET_TRANSACTION__BUDGET_TRANSACTION_BUDGET_CATEGORY_ID_FKEY
 import com.jacobknowlton.cents.jooq.generated.keys.UNQ_BUDGET_CATEGORY_NAME
-import com.jacobknowlton.cents.jooq.generated.tables.JBudgetEntry.JBudgetEntryPath
+import com.jacobknowlton.cents.jooq.generated.tables.JBudgetTransaction.JBudgetTransactionPath
 import com.jacobknowlton.cents.jooq.generated.tables.records.JBudgetCategoryRecord
 
 import java.math.BigDecimal
@@ -92,9 +92,14 @@ open class JBudgetCategory(
     val NAME: TableField<JBudgetCategoryRecord, String?> = createField(DSL.name("name"), SQLDataType.CLOB.nullable(false), this, "")
 
     /**
-     * The column <code>public.budget_category.budget_limit</code>.
+     * The column <code>public.budget_category.amount</code>.
      */
-    val BUDGET_LIMIT: TableField<JBudgetCategoryRecord, BigDecimal?> = createField(DSL.name("budget_limit"), SQLDataType.NUMERIC(10, 2).nullable(false), this, "")
+    val AMOUNT: TableField<JBudgetCategoryRecord, BigDecimal?> = createField(DSL.name("amount"), SQLDataType.NUMERIC(10, 2).nullable(false), this, "")
+
+    /**
+     * The column <code>public.budget_category.color</code>.
+     */
+    val COLOR: TableField<JBudgetCategoryRecord, String?> = createField(DSL.name("color"), SQLDataType.CLOB.nullable(false), this, "")
 
     /**
      * The column <code>public.budget_category.created_at</code>.
@@ -143,23 +148,24 @@ open class JBudgetCategory(
     override fun getPrimaryKey(): UniqueKey<JBudgetCategoryRecord> = BUDGET_CATEGORY_PKEY
     override fun getUniqueKeys(): List<UniqueKey<JBudgetCategoryRecord>> = listOf(UNQ_BUDGET_CATEGORY_NAME)
 
-    private lateinit var _budgetEntry: JBudgetEntryPath
+    private lateinit var _budgetTransaction: JBudgetTransactionPath
 
     /**
      * Get the implicit to-many join path to the
-     * <code>public.budget_entry</code> table
+     * <code>public.budget_transaction</code> table
      */
-    fun budgetEntry(): JBudgetEntryPath {
-        if (!this::_budgetEntry.isInitialized)
-            _budgetEntry = JBudgetEntryPath(this, null, BUDGET_ENTRY__BUDGET_ENTRY_CATEGORY_ID_FKEY.inverseKey)
+    fun budgetTransaction(): JBudgetTransactionPath {
+        if (!this::_budgetTransaction.isInitialized)
+            _budgetTransaction = JBudgetTransactionPath(this, null, BUDGET_TRANSACTION__BUDGET_TRANSACTION_BUDGET_CATEGORY_ID_FKEY.inverseKey)
 
-        return _budgetEntry;
+        return _budgetTransaction;
     }
 
-    val budgetEntry: JBudgetEntryPath
-        get(): JBudgetEntryPath = budgetEntry()
+    val budgetTransaction: JBudgetTransactionPath
+        get(): JBudgetTransactionPath = budgetTransaction()
     override fun getChecks(): List<Check<JBudgetCategoryRecord>> = listOf(
-        Internal.createCheck(this, DSL.name("chk_budget_category_budget_limit"), "((budget_limit >= (0)::numeric))", true),
+        Internal.createCheck(this, DSL.name("chk_budget_category_amount"), "((amount >= (0)::numeric))", true),
+        Internal.createCheck(this, DSL.name("chk_budget_category_color"), "((color ~ '^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})\$'::text))", true),
         Internal.createCheck(this, DSL.name("chk_budget_category_name_len"), "((char_length(name) <= 255))", true)
     )
     override fun `as`(alias: String): JBudgetCategory = JBudgetCategory(DSL.name(alias), this)

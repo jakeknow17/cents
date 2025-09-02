@@ -6,10 +6,10 @@ package com.jacobknowlton.cents.jooq.generated.tables
 
 import com.jacobknowlton.cents.jooq.generated.JPublic
 import com.jacobknowlton.cents.jooq.generated.indexes.IDX_BUDGET_VENDOR_NAME
-import com.jacobknowlton.cents.jooq.generated.keys.BUDGET_ENTRY__BUDGET_ENTRY_VENDOR_ID_FKEY
+import com.jacobknowlton.cents.jooq.generated.keys.BUDGET_TRANSACTION__BUDGET_TRANSACTION_BUDGET_VENDOR_ID_FKEY
 import com.jacobknowlton.cents.jooq.generated.keys.BUDGET_VENDOR_PKEY
 import com.jacobknowlton.cents.jooq.generated.keys.UNQ_BUDGET_VENDOR_NAME
-import com.jacobknowlton.cents.jooq.generated.tables.JBudgetEntry.JBudgetEntryPath
+import com.jacobknowlton.cents.jooq.generated.tables.JBudgetTransaction.JBudgetTransactionPath
 import com.jacobknowlton.cents.jooq.generated.tables.records.JBudgetVendorRecord
 
 import java.time.OffsetDateTime
@@ -91,6 +91,11 @@ open class JBudgetVendor(
     val NAME: TableField<JBudgetVendorRecord, String?> = createField(DSL.name("name"), SQLDataType.CLOB.nullable(false), this, "")
 
     /**
+     * The column <code>public.budget_vendor.link</code>.
+     */
+    val LINK: TableField<JBudgetVendorRecord, String?> = createField(DSL.name("link"), SQLDataType.CLOB, this, "")
+
+    /**
      * The column <code>public.budget_vendor.created_at</code>.
      */
     val CREATED_AT: TableField<JBudgetVendorRecord, OffsetDateTime?> = createField(DSL.name("created_at"), SQLDataType.TIMESTAMPWITHTIMEZONE(6).nullable(false).defaultValue(DSL.field(DSL.raw("now()"), SQLDataType.TIMESTAMPWITHTIMEZONE)), this, "")
@@ -137,22 +142,23 @@ open class JBudgetVendor(
     override fun getPrimaryKey(): UniqueKey<JBudgetVendorRecord> = BUDGET_VENDOR_PKEY
     override fun getUniqueKeys(): List<UniqueKey<JBudgetVendorRecord>> = listOf(UNQ_BUDGET_VENDOR_NAME)
 
-    private lateinit var _budgetEntry: JBudgetEntryPath
+    private lateinit var _budgetTransaction: JBudgetTransactionPath
 
     /**
      * Get the implicit to-many join path to the
-     * <code>public.budget_entry</code> table
+     * <code>public.budget_transaction</code> table
      */
-    fun budgetEntry(): JBudgetEntryPath {
-        if (!this::_budgetEntry.isInitialized)
-            _budgetEntry = JBudgetEntryPath(this, null, BUDGET_ENTRY__BUDGET_ENTRY_VENDOR_ID_FKEY.inverseKey)
+    fun budgetTransaction(): JBudgetTransactionPath {
+        if (!this::_budgetTransaction.isInitialized)
+            _budgetTransaction = JBudgetTransactionPath(this, null, BUDGET_TRANSACTION__BUDGET_TRANSACTION_BUDGET_VENDOR_ID_FKEY.inverseKey)
 
-        return _budgetEntry;
+        return _budgetTransaction;
     }
 
-    val budgetEntry: JBudgetEntryPath
-        get(): JBudgetEntryPath = budgetEntry()
+    val budgetTransaction: JBudgetTransactionPath
+        get(): JBudgetTransactionPath = budgetTransaction()
     override fun getChecks(): List<Check<JBudgetVendorRecord>> = listOf(
+        Internal.createCheck(this, DSL.name("chk_budget_vendor_link_len"), "((char_length(name) <= 1000))", true),
         Internal.createCheck(this, DSL.name("chk_budget_vendor_name_len"), "((char_length(name) <= 255))", true)
     )
     override fun `as`(alias: String): JBudgetVendor = JBudgetVendor(DSL.name(alias), this)
