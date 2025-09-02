@@ -2,10 +2,7 @@
 
 package com.jacobknowlton.cents.generated.budget.model.request
 
-import java.math.BigDecimal
 
-data class BudgetCategoryRequest(
+data class BudgetTagsRequest(
     val name: String,
-    val amount: BigDecimal,
-    val color: String,
 )

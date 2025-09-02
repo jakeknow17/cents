@@ -2,14 +2,11 @@
 
 package com.jacobknowlton.cents.generated.budget.model
 
-import java.math.BigDecimal
 import java.time.OffsetDateTime
 
-data class BudgetCategory(
+data class BudgetTags(
     val id: Long,
     val name: String,
-    val amount: BigDecimal,
-    val color: String,
     val createdAt: OffsetDateTime? = null,
     val updatedAt: OffsetDateTime? = null,
 )
