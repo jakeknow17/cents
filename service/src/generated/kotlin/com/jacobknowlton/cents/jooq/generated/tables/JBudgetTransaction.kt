@@ -118,7 +118,7 @@ open class JBudgetTransaction(
     /**
      * The column <code>public.budget_transaction.notes</code>.
      */
-    val NOTES: TableField<JBudgetTransactionRecord, String?> = createField(DSL.name("notes"), SQLDataType.CLOB.nullable(false), this, "")
+    val NOTES: TableField<JBudgetTransactionRecord, String?> = createField(DSL.name("notes"), SQLDataType.CLOB, this, "")
 
     /**
      * The column <code>public.budget_transaction.budget_category_id</code>.

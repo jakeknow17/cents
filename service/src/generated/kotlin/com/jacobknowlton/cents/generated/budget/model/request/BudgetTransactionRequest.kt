@@ -11,7 +11,7 @@ data class BudgetTransactionRequest(
     val amount: BigDecimal,
     val type: BudgetTransaction.Type,
     val description: String,
-    val notes: String,
+    val notes: String? = null,
     val budgetTagsId: List<Long>,
     val budgetCategoryId: Long? = null,
     val budgetVendorId: Long? = null,

@@ -7,16 +7,16 @@ import org.jooq.RecordMapper
 import java.math.BigDecimal
 import java.time.OffsetDateTime
 
-class BudgetCategoryMapper : RecordMapper<Record, BudgetCategory> {
+object BudgetCategoryMapper : RecordMapper<Record, BudgetCategory> {
     override fun map(record: Record?): BudgetCategory? {
         return record?.let {
             BudgetCategory(
-                id = it.getValue(BUDGET_CATEGORY.ID, Long::class.java),
-                name = it.getValue(BUDGET_CATEGORY.NAME, String::class.java),
-                amount = it.getValue(BUDGET_CATEGORY.AMOUNT, BigDecimal::class.java),
-                color = it.getValue(BUDGET_CATEGORY.COLOR, String::class.java),
-                createdAt = it.getValue(BUDGET_CATEGORY.CREATED_AT, OffsetDateTime::class.java),
-                updatedAt = it.getValue(BUDGET_CATEGORY.UPDATED_AT, OffsetDateTime::class.java)
+                id = it.get(BUDGET_CATEGORY.ID, Long::class.java),
+                name = it.get(BUDGET_CATEGORY.NAME, String::class.java),
+                amount = it.get(BUDGET_CATEGORY.AMOUNT, BigDecimal::class.java),
+                color = it.get(BUDGET_CATEGORY.COLOR, String::class.java),
+                createdAt = it.get(BUDGET_CATEGORY.CREATED_AT, OffsetDateTime::class.java),
+                updatedAt = it.get(BUDGET_CATEGORY.UPDATED_AT, OffsetDateTime::class.java)
             )
         }
     }

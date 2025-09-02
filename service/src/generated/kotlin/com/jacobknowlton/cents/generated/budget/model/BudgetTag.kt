@@ -7,6 +7,7 @@ import java.time.OffsetDateTime
 data class BudgetTag(
     val id: Long,
     val name: String,
+    val budgetTransactions: List<BudgetTransaction>,
     val createdAt: OffsetDateTime? = null,
     val updatedAt: OffsetDateTime? = null,
 )

@@ -74,7 +74,7 @@ CREATE TABLE IF NOT EXISTS budget_transaction (
     amount              NUMERIC(10, 2) NOT NULL,
     type                TEXT NOT NULL,
     description         TEXT NOT NULL,
-    notes               TEXT NOT NULL,
+    notes               TEXT,
     budget_category_id  BIGINT REFERENCES budget_category (id) ON DELETE SET NULL,
     budget_vendor_id    BIGINT REFERENCES budget_vendor (id) ON DELETE SET NULL,
     budget_account_id   BIGINT REFERENCES budget_account (id) ON DELETE SET NULL,

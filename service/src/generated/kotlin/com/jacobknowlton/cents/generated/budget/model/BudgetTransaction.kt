@@ -12,7 +12,7 @@ data class BudgetTransaction(
     val amount: BigDecimal,
     val type: Type,
     val description: String,
-    val notes: String,
+    val notes: String? = null,
     val budgetTags: List<BudgetTag>,
     val budgetCategory: BudgetCategory? = null,
     val budgetVendor: BudgetVendor? = null,

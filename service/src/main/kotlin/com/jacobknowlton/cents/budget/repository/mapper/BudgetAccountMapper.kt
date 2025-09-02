@@ -6,15 +6,15 @@ import org.jooq.Record
 import org.jooq.RecordMapper
 import java.time.OffsetDateTime
 
-class BudgetAccountMapper : RecordMapper<Record, BudgetAccount> {
+object BudgetAccountMapper : RecordMapper<Record, BudgetAccount> {
     override fun map(record: Record?): BudgetAccount? {
         return record?.let {
             BudgetAccount(
-                id = it.getValue(BUDGET_ACCOUNT.ID, Long::class.java),
-                name = it.getValue(BUDGET_ACCOUNT.NAME, String::class.java),
-                type = enumValueOf<BudgetAccount.Type>(it.getValue(BUDGET_ACCOUNT.TYPE, String::class.java)),
-                createdAt = it.getValue(BUDGET_ACCOUNT.CREATED_AT, OffsetDateTime::class.java),
-                updatedAt = it.getValue(BUDGET_ACCOUNT.UPDATED_AT, OffsetDateTime::class.java)
+                id = it.get(BUDGET_ACCOUNT.ID, Long::class.java),
+                name = it.get(BUDGET_ACCOUNT.NAME, String::class.java),
+                type = enumValueOf<BudgetAccount.Type>(it.get(BUDGET_ACCOUNT.TYPE, String::class.java)),
+                createdAt = it.get(BUDGET_ACCOUNT.CREATED_AT, OffsetDateTime::class.java),
+                updatedAt = it.get(BUDGET_ACCOUNT.UPDATED_AT, OffsetDateTime::class.java)
             )
         }
     }
