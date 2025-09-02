@@ -13,7 +13,8 @@ class BudgetCategoryMapper : RecordMapper<Record, BudgetCategory> {
             BudgetCategory(
                 id = it.getValue(BUDGET_CATEGORY.ID, Long::class.java),
                 name = it.getValue(BUDGET_CATEGORY.NAME, String::class.java),
-                budgetLimit = it.getValue(BUDGET_CATEGORY.BUDGET_LIMIT, BigDecimal::class.java),
+                amount = it.getValue(BUDGET_CATEGORY.AMOUNT, BigDecimal::class.java),
+                color = it.getValue(BUDGET_CATEGORY.COLOR, String::class.java),
                 createdAt = it.getValue(BUDGET_CATEGORY.CREATED_AT, OffsetDateTime::class.java),
                 updatedAt = it.getValue(BUDGET_CATEGORY.UPDATED_AT, OffsetDateTime::class.java)
             )

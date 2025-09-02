@@ -12,6 +12,7 @@ class BudgetVendorMapper : RecordMapper<Record, BudgetVendor> {
             BudgetVendor(
                 id = it.getValue(BUDGET_VENDOR.ID, Long::class.java),
                 name = it.getValue(BUDGET_VENDOR.NAME, String::class.java),
+                link = it.getValue(BUDGET_VENDOR.LINK, String::class.java),
                 createdAt = it.getValue(BUDGET_VENDOR.CREATED_AT, OffsetDateTime::class.java),
                 updatedAt = it.getValue(BUDGET_VENDOR.UPDATED_AT, OffsetDateTime::class.java)
             )
