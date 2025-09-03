@@ -2,9 +2,10 @@
 
 package com.jacobknowlton.cents.generated.budget.model.request
 
-import com.jacobknowlton.cents.generated.budget.model.BudgetAccount
+import java.math.BigDecimal
 
-data class BudgetAccountRequest(
+data class CategoryRequest(
     val name: String,
-    val type: BudgetAccount.Type,
+    val amount: BigDecimal,
+    val color: String,
 )

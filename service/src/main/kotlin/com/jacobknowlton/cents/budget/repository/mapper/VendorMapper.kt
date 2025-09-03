@@ -1,15 +1,15 @@
 package com.jacobknowlton.cents.budget.repository.mapper
 
-import com.jacobknowlton.cents.generated.budget.model.BudgetVendor
+import com.jacobknowlton.cents.generated.budget.model.Vendor
 import com.jacobknowlton.cents.jooq.generated.tables.references.BUDGET_VENDOR
 import org.jooq.Record
 import org.jooq.RecordMapper
 import java.time.OffsetDateTime
 
-object BudgetVendorMapper : RecordMapper<Record, BudgetVendor> {
-    override fun map(record: Record?): BudgetVendor? {
+object VendorMapper : RecordMapper<Record, Vendor> {
+    override fun map(record: Record?): Vendor? {
         return record?.let {
-            BudgetVendor(
+            Vendor(
                 id = it.get(BUDGET_VENDOR.ID, Long::class.java),
                 name = it.get(BUDGET_VENDOR.NAME, String::class.java),
                 link = it.get(BUDGET_VENDOR.LINK, String::class.java),

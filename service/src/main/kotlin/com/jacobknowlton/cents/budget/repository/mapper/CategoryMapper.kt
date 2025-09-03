@@ -1,16 +1,16 @@
 package com.jacobknowlton.cents.budget.repository.mapper
 
-import com.jacobknowlton.cents.generated.budget.model.BudgetCategory
+import com.jacobknowlton.cents.generated.budget.model.Category
 import com.jacobknowlton.cents.jooq.generated.tables.references.BUDGET_CATEGORY
 import org.jooq.Record
 import org.jooq.RecordMapper
 import java.math.BigDecimal
 import java.time.OffsetDateTime
 
-object BudgetCategoryMapper : RecordMapper<Record, BudgetCategory> {
-    override fun map(record: Record?): BudgetCategory? {
+object CategoryMapper : RecordMapper<Record, Category> {
+    override fun map(record: Record?): Category? {
         return record?.let {
-            BudgetCategory(
+            Category(
                 id = it.get(BUDGET_CATEGORY.ID, Long::class.java),
                 name = it.get(BUDGET_CATEGORY.NAME, String::class.java),
                 amount = it.get(BUDGET_CATEGORY.AMOUNT, BigDecimal::class.java),

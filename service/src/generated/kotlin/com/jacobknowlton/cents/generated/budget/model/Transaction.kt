@@ -6,17 +6,17 @@ import java.time.LocalDate
 import java.math.BigDecimal
 import java.time.OffsetDateTime
 
-data class BudgetTransaction(
+data class Transaction(
     val id: Long,
     val date: LocalDate,
     val amount: BigDecimal,
     val type: Type,
     val description: String,
     val notes: String? = null,
-    val budgetTags: List<BudgetTag>,
-    val budgetCategory: BudgetCategory? = null,
-    val budgetVendor: BudgetVendor? = null,
-    val budgetAccount: BudgetAccount? = null,
+    val tags: List<Tag>,
+    val category: Category? = null,
+    val vendor: Vendor? = null,
+    val account: Account? = null,
     val createdAt: OffsetDateTime? = null,
     val updatedAt: OffsetDateTime? = null,
 ) {

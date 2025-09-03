@@ -4,19 +4,10 @@ package com.jacobknowlton.cents.generated.budget.model
 
 import java.time.OffsetDateTime
 
-data class BudgetAccount(
+data class Vendor(
     val id: Long,
     val name: String,
-    val type: Type,
+    val link: String? = null,
     val createdAt: OffsetDateTime? = null,
     val updatedAt: OffsetDateTime? = null,
-) {
-    enum class Type {
-        CHECKING,
-        SAVINGS,
-        CREDIT,
-        INVESTMENT,
-        VENMO,
-        OTHER;
-    }
-}
+)

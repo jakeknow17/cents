@@ -4,10 +4,10 @@ package com.jacobknowlton.cents.generated.budget.model
 
 import java.time.OffsetDateTime
 
-data class BudgetVendor(
+data class Tag(
     val id: Long,
     val name: String,
-    val link: String? = null,
+    val transactions: List<Transaction>,
     val createdAt: OffsetDateTime? = null,
     val updatedAt: OffsetDateTime? = null,
 )

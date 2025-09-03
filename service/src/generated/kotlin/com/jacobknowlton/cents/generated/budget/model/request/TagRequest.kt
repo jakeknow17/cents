@@ -3,7 +3,7 @@
 package com.jacobknowlton.cents.generated.budget.model.request
 
 
-data class BudgetTagRequest(
+data class TagRequest(
     val name: String,
-    val budgetTransactionsId: List<Long>,
+    val transactionsId: List<Long>,
 )

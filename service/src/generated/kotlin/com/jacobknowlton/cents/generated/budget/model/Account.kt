@@ -2,14 +2,21 @@
 
 package com.jacobknowlton.cents.generated.budget.model
 
-import java.math.BigDecimal
 import java.time.OffsetDateTime
 
-data class BudgetCategory(
+data class Account(
     val id: Long,
     val name: String,
-    val amount: BigDecimal,
-    val color: String,
+    val type: Type,
     val createdAt: OffsetDateTime? = null,
     val updatedAt: OffsetDateTime? = null,
-)
+) {
+    enum class Type {
+        CHECKING,
+        SAVINGS,
+        CREDIT,
+        INVESTMENT,
+        VENMO,
+        OTHER;
+    }
+}
