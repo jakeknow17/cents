@@ -1,6 +1,6 @@
 import { useForm } from "react-hook-form";
 import { useEffect } from "react";
-import type { BudgetCategory } from "../../types";
+import type { Category } from "../../types/budget";
 
 interface FormData {
   name: string;
@@ -12,9 +12,9 @@ interface CategoryModalProps {
   isOpen: boolean;
   onClose: () => void;
   mode: "add" | "edit";
-  category?: BudgetCategory; // Required when mode is "edit"
-  onAdd?: (category: Omit<BudgetCategory, "id">) => void;
-  onEdit?: (category: BudgetCategory) => void;
+  category?: Category; // Required when mode is "edit"
+  onAdd?: (category: Omit<Category, "id">) => void;
+  onEdit?: (category: Category) => void;
 }
 
 const defaultValues = {
@@ -46,7 +46,7 @@ const CategoryModal = ({
       if (mode === "edit" && category) {
         reset({
           name: category.name,
-          budgeted: category.budgeted.toFixed(2),
+          budgeted: category.amount.toFixed(2),
           color: category.color,
         });
       } else {
@@ -59,14 +59,14 @@ const CategoryModal = ({
     if (mode === "add" && onAdd) {
       onAdd({
         name: data.name,
-        budgeted: parseFloat(data.budgeted),
+        amount: parseFloat(data.budgeted),
         color: data.color,
       });
     } else if (mode === "edit" && onEdit && category) {
       onEdit({
         ...category,
         name: data.name,
-        budgeted: parseFloat(data.budgeted),
+        amount: parseFloat(data.budgeted),
         color: data.color,
       });
     }

@@ -7,7 +7,7 @@ const ThemeToggle = () => {
     // Get the current theme from localStorage or default to light
     const currentTheme = localStorage.getItem("theme") || "light";
     setTheme(currentTheme);
-    
+
     // Apply the theme to the document
     document.documentElement.setAttribute("data-theme", currentTheme);
   }, []);
@@ -15,10 +15,10 @@ const ThemeToggle = () => {
   const toggleTheme = () => {
     const newTheme = theme === "light" ? "dark" : "light";
     setTheme(newTheme);
-    
+
     // Save to localStorage
     localStorage.setItem("theme", newTheme);
-    
+
     // Apply to document
     document.documentElement.setAttribute("data-theme", newTheme);
   };

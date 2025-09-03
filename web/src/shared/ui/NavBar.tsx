@@ -4,7 +4,7 @@ import ThemeToggle from "./ThemeToggle";
 
 const NavBar = () => {
   const drawerRef = useRef<HTMLInputElement>(null);
-  
+
   const navItems = [
     { id: 0, name: "Dashboard", path: "/" },
     { id: 1, name: "Transactions", path: "transactions" },
@@ -96,6 +96,6 @@ const NavBar = () => {
       </div>
     </div>
   );
-}
+};
 
 export default NavBar;
