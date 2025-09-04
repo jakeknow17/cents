@@ -9,8 +9,7 @@ import type {
   Vendor,
 } from "../../types/budget";
 
-// Base API URL
-const API_BASE = "budget.jacobknowlton.com/api";
+const API_BASE: string = (import.meta.env.VITE_API_BASE as string) || "http://budget.jacobknowlton.com/api";
 
 // ----------------------------------------------------------------------------
 // ACCOUNT HOOKS
@@ -57,7 +56,7 @@ export const useUpdateAccount = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(account),
       }),
-    onSuccess: (data) => async () => {
+    onSuccess: async (data) => {
       await queryClient.invalidateQueries({
         queryKey: queryKeys.account(data.id),
       });
@@ -74,7 +73,7 @@ export const useDeleteAccount = () => {
       fetchJSON(`${API_BASE}/accounts/${id.toString()}`, {
         method: "DELETE",
       }),
-    onSuccess: () => async () => {
+    onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: queryKeys.accounts });
     },
   });
@@ -126,7 +125,7 @@ export const useUpdateCategory = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(category),
       }),
-    onSuccess: (data) => async () => {
+    onSuccess: async (data) => {
       await queryClient.invalidateQueries({
         queryKey: queryKeys.category(data.id),
       });
@@ -143,7 +142,7 @@ export const useDeleteCategory = () => {
       fetchJSON(`${API_BASE}/categories/${id.toString()}`, {
         method: "DELETE",
       }),
-    onSuccess: () => async () => {
+    onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: queryKeys.categories });
     },
   });
@@ -194,7 +193,7 @@ export const useUpdateTag = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(tag),
       }),
-    onSuccess: (data) => async () => {
+    onSuccess: async (data) => {
       await queryClient.invalidateQueries({ queryKey: queryKeys.tag(data.id) });
       await queryClient.invalidateQueries({ queryKey: queryKeys.tags });
     },
@@ -209,7 +208,7 @@ export const useDeleteTag = () => {
       fetchJSON(`${API_BASE}/tags/${id.toString()}`, {
         method: "DELETE",
       }),
-    onSuccess: () => async () => {
+    onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: queryKeys.tags });
     },
   });
@@ -220,6 +219,7 @@ export const useDeleteTag = () => {
 // ----------------------------------------------------------------------------
 
 export const useTransactions = (page = 0, size = 20) => {
+  console.log("API_BASE", API_BASE);
   return useQuery({
     queryKey: [...queryKeys.transactions, "list", page, size],
     queryFn: () =>
@@ -268,7 +268,7 @@ export const useUpdateTransaction = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(transaction),
       }),
-    onSuccess: (data) => async () => {
+    onSuccess: async (data) => {
       await queryClient.invalidateQueries({
         queryKey: queryKeys.transaction(data.id),
       });
@@ -336,7 +336,7 @@ export const useUpdateVendor = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(vendor),
       }),
-    onSuccess: (data) => async () => {
+    onSuccess: async (data) => {
       await queryClient.invalidateQueries({
         queryKey: queryKeys.vendor(data.id),
       });
@@ -353,7 +353,7 @@ export const useDeleteVendor = () => {
       fetchJSON(`${API_BASE}/vendors/${id.toString()}`, {
         method: "DELETE",
       }),
-    onSuccess: () => async () => {
+    onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: queryKeys.vendors });
     },
   });
