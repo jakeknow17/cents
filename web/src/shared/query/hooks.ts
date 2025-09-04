@@ -7,9 +7,16 @@ import type {
   Tag,
   Transaction,
   Vendor,
+  AccountRequest,
+  CategoryRequest,
+  TagRequest,
+  TransactionRequest,
+  VendorRequest,
 } from "../../types/budget";
 
-const API_BASE: string = (import.meta.env.VITE_API_BASE as string) || "http://budget.jacobknowlton.com/api";
+const API_BASE: string =
+  (import.meta.env.VITE_API_BASE as string) ||
+  "http://budget.jacobknowlton.com/api";
 
 // ----------------------------------------------------------------------------
 // ACCOUNT HOOKS
@@ -18,14 +25,15 @@ const API_BASE: string = (import.meta.env.VITE_API_BASE as string) || "http://bu
 export const useAccounts = () => {
   return useQuery({
     queryKey: queryKeys.accounts,
-    queryFn: () => fetchJSON<Account[]>(`${API_BASE}/accounts`),
+    queryFn: () => fetchJSON<Account[]>(`${API_BASE}/v1/budget/accounts`),
   });
 };
 
 export const useAccount = (id: number) => {
   return useQuery({
     queryKey: queryKeys.account(id),
-    queryFn: () => fetchJSON<Account>(`${API_BASE}/accounts/${id.toString()}`),
+    queryFn: () =>
+      fetchJSON<Account>(`${API_BASE}/v1/budget/accounts/${id.toString()}`),
     enabled: !!id,
   });
 };
@@ -34,11 +42,11 @@ export const useCreateAccount = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (account: Omit<Account, "id">) =>
-      fetchJSON<Account>(`${API_BASE}/accounts`, {
+    mutationFn: (accountRequest: AccountRequest) =>
+      fetchJSON<Account>(`${API_BASE}/v1/budget/accounts`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(account),
+        body: JSON.stringify(accountRequest),
       }),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: queryKeys.accounts });
@@ -50,16 +58,24 @@ export const useUpdateAccount = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, ...account }: Account) =>
-      fetchJSON<Account>(`${API_BASE}/accounts/${id.toString()}`, {
+    mutationFn: ({
+      id,
+      accountRequest,
+    }: {
+      id: number;
+      accountRequest: AccountRequest;
+    }) =>
+      fetchJSON<Account>(`${API_BASE}/v1/budget/accounts/${id.toString()}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(account),
+        body: JSON.stringify(accountRequest),
       }),
     onSuccess: async (data) => {
-      await queryClient.invalidateQueries({
-        queryKey: queryKeys.account(data.id),
-      });
+      if (data) {
+        await queryClient.invalidateQueries({
+          queryKey: queryKeys.account(data.id),
+        });
+      }
       await queryClient.invalidateQueries({ queryKey: queryKeys.accounts });
     },
   });
@@ -70,7 +86,7 @@ export const useDeleteAccount = () => {
 
   return useMutation({
     mutationFn: (id: number) =>
-      fetchJSON(`${API_BASE}/accounts/${id.toString()}`, {
+      fetchJSON(`${API_BASE}/v1/budget/accounts/${id.toString()}`, {
         method: "DELETE",
       }),
     onSuccess: async () => {
@@ -86,7 +102,7 @@ export const useDeleteAccount = () => {
 export const useCategories = () => {
   return useQuery({
     queryKey: queryKeys.categories,
-    queryFn: () => fetchJSON<Category[]>(`${API_BASE}/categories`),
+    queryFn: () => fetchJSON<Category[]>(`${API_BASE}/v1/budget/categories`),
   });
 };
 
@@ -94,7 +110,7 @@ export const useCategory = (id: number) => {
   return useQuery({
     queryKey: queryKeys.category(id),
     queryFn: () =>
-      fetchJSON<Category>(`${API_BASE}/categories/${id.toString()}`),
+      fetchJSON<Category>(`${API_BASE}/v1/budget/categories/${id.toString()}`),
     enabled: !!id,
   });
 };
@@ -103,11 +119,11 @@ export const useCreateCategory = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (category: Omit<Category, "id">) =>
-      fetchJSON<Category>(`${API_BASE}/categories`, {
+    mutationFn: (categoryRequest: CategoryRequest) =>
+      fetchJSON<Category>(`${API_BASE}/v1/budget/categories`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(category),
+        body: JSON.stringify(categoryRequest),
       }),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: queryKeys.categories });
@@ -119,16 +135,24 @@ export const useUpdateCategory = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, ...category }: Category) =>
-      fetchJSON<Category>(`${API_BASE}/categories/${String(id)}`, {
+    mutationFn: ({
+      id,
+      categoryRequest,
+    }: {
+      id: number;
+      categoryRequest: CategoryRequest;
+    }) =>
+      fetchJSON<Category>(`${API_BASE}/v1/budget/categories/${String(id)}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(category),
+        body: JSON.stringify(categoryRequest),
       }),
     onSuccess: async (data) => {
-      await queryClient.invalidateQueries({
-        queryKey: queryKeys.category(data.id),
-      });
+      if (data) {
+        await queryClient.invalidateQueries({
+          queryKey: queryKeys.category(data.id),
+        });
+      }
       await queryClient.invalidateQueries({ queryKey: queryKeys.categories });
     },
   });
@@ -139,7 +163,7 @@ export const useDeleteCategory = () => {
 
   return useMutation({
     mutationFn: (id: number) =>
-      fetchJSON(`${API_BASE}/categories/${id.toString()}`, {
+      fetchJSON(`${API_BASE}/v1/budget/categories/${id.toString()}`, {
         method: "DELETE",
       }),
     onSuccess: async () => {
@@ -155,14 +179,15 @@ export const useDeleteCategory = () => {
 export const useTags = () => {
   return useQuery({
     queryKey: queryKeys.tags,
-    queryFn: () => fetchJSON<Tag[]>(`${API_BASE}/tags`),
+    queryFn: () => fetchJSON<Tag[]>(`${API_BASE}/v1/budget/tags`),
   });
 };
 
 export const useTag = (id: number) => {
   return useQuery({
     queryKey: queryKeys.tag(id),
-    queryFn: () => fetchJSON<Tag>(`${API_BASE}/tags/${id.toString()}`),
+    queryFn: () =>
+      fetchJSON<Tag>(`${API_BASE}/v1/budget/tags/${id.toString()}`),
     enabled: !!id,
   });
 };
@@ -171,11 +196,11 @@ export const useCreateTag = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (tag: Omit<Tag, "id">) =>
-      fetchJSON<Tag>(`${API_BASE}/tags`, {
+    mutationFn: (tagRequest: TagRequest) =>
+      fetchJSON<Tag>(`${API_BASE}/v1/budget/tags`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(tag),
+        body: JSON.stringify(tagRequest),
       }),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: queryKeys.tags });
@@ -187,14 +212,18 @@ export const useUpdateTag = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, ...tag }: Tag) =>
-      fetchJSON<Tag>(`${API_BASE}/tags/${id.toString()}`, {
+    mutationFn: ({ id, tagRequest }: { id: number; tagRequest: TagRequest }) =>
+      fetchJSON<Tag>(`${API_BASE}/v1/budget/tags/${id.toString()}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(tag),
+        body: JSON.stringify(tagRequest),
       }),
     onSuccess: async (data) => {
-      await queryClient.invalidateQueries({ queryKey: queryKeys.tag(data.id) });
+      if (data) {
+        await queryClient.invalidateQueries({
+          queryKey: queryKeys.tag(data.id),
+        });
+      }
       await queryClient.invalidateQueries({ queryKey: queryKeys.tags });
     },
   });
@@ -205,7 +234,7 @@ export const useDeleteTag = () => {
 
   return useMutation({
     mutationFn: (id: number) =>
-      fetchJSON(`${API_BASE}/tags/${id.toString()}`, {
+      fetchJSON(`${API_BASE}/v1/budget/tags/${id.toString()}`, {
         method: "DELETE",
       }),
     onSuccess: async () => {
@@ -218,17 +247,12 @@ export const useDeleteTag = () => {
 // TRANSACTION HOOKS
 // ----------------------------------------------------------------------------
 
-export const useTransactions = (page = 0, size = 20) => {
-  console.log("API_BASE", API_BASE);
+export const useTransactions = (offset = 0, limit = 100) => {
   return useQuery({
-    queryKey: [...queryKeys.transactions, "list", page, size],
+    queryKey: [...queryKeys.transactions, "list", offset, limit],
     queryFn: () =>
-      fetchJSON<{
-        items: Transaction[];
-        totalItems: number;
-        totalPages: number;
-      }>(
-        `${API_BASE}/transactions?page=${page.toString()}&size=${size.toString()}`,
+      fetchJSON<Transaction[]>(
+        `${API_BASE}/v1/budget/transactions?offset=${offset.toString()}&limit=${limit.toString()}`,
       ),
   });
 };
@@ -237,7 +261,9 @@ export const useTransaction = (id: number) => {
   return useQuery({
     queryKey: queryKeys.transaction(id),
     queryFn: () =>
-      fetchJSON<Transaction>(`${API_BASE}/transactions/${id.toString()}`),
+      fetchJSON<Transaction>(
+        `${API_BASE}/v1/budget/transactions/${id.toString()}`,
+      ),
     enabled: !!id,
   });
 };
@@ -246,11 +272,11 @@ export const useCreateTransaction = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (transaction: Omit<Transaction, "id">) =>
-      fetchJSON<Transaction>(`${API_BASE}/transactions`, {
+    mutationFn: (transactionRequest: TransactionRequest) =>
+      fetchJSON<Transaction>(`${API_BASE}/v1/budget/transactions`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(transaction),
+        body: JSON.stringify(transactionRequest),
       }),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: queryKeys.transactions });
@@ -262,16 +288,27 @@ export const useUpdateTransaction = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, ...transaction }: Transaction) =>
-      fetchJSON<Transaction>(`${API_BASE}/transactions/${id.toString()}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(transaction),
-      }),
+    mutationFn: ({
+      id,
+      transactionRequest,
+    }: {
+      id: number;
+      transactionRequest: TransactionRequest;
+    }) =>
+      fetchJSON<Transaction>(
+        `${API_BASE}/v1/budget/transactions/${id.toString()}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(transactionRequest),
+        },
+      ),
     onSuccess: async (data) => {
-      await queryClient.invalidateQueries({
-        queryKey: queryKeys.transaction(data.id),
-      });
+      if (data) {
+        await queryClient.invalidateQueries({
+          queryKey: queryKeys.transaction(data.id),
+        });
+      }
       await queryClient.invalidateQueries({ queryKey: queryKeys.transactions });
     },
   });
@@ -282,10 +319,10 @@ export const useDeleteTransaction = () => {
 
   return useMutation({
     mutationFn: (id: number) =>
-      fetchJSON(`${API_BASE}/transactions/${id.toString()}`, {
+      fetchJSON(`${API_BASE}/v1/budget/transactions/${id.toString()}`, {
         method: "DELETE",
       }),
-    onSuccess: () => async () => {
+    onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: queryKeys.transactions });
     },
   });
@@ -298,14 +335,15 @@ export const useDeleteTransaction = () => {
 export const useVendors = () => {
   return useQuery({
     queryKey: queryKeys.vendors,
-    queryFn: () => fetchJSON<Vendor[]>(`${API_BASE}/vendors`),
+    queryFn: () => fetchJSON<Vendor[]>(`${API_BASE}/v1/budget/vendors`),
   });
 };
 
 export const useVendor = (id: number) => {
   return useQuery({
     queryKey: queryKeys.vendor(id),
-    queryFn: () => fetchJSON<Vendor>(`${API_BASE}/vendors/${id.toString()}`),
+    queryFn: () =>
+      fetchJSON<Vendor>(`${API_BASE}/v1/budget/vendors/${id.toString()}`),
     enabled: !!id,
   });
 };
@@ -314,11 +352,11 @@ export const useCreateVendor = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (vendor: Omit<Vendor, "id">) =>
-      fetchJSON<Vendor>(`${API_BASE}/vendors`, {
+    mutationFn: (vendorRequest: VendorRequest) =>
+      fetchJSON<Vendor>(`${API_BASE}/v1/budget/vendors`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(vendor),
+        body: JSON.stringify(vendorRequest),
       }),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: queryKeys.vendors });
@@ -330,16 +368,24 @@ export const useUpdateVendor = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, ...vendor }: Vendor) =>
-      fetchJSON<Vendor>(`${API_BASE}/vendors/${id.toString()}`, {
+    mutationFn: ({
+      id,
+      vendorRequest,
+    }: {
+      id: number;
+      vendorRequest: VendorRequest;
+    }) =>
+      fetchJSON<Vendor>(`${API_BASE}/v1/budget/vendors/${id.toString()}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(vendor),
+        body: JSON.stringify(vendorRequest),
       }),
     onSuccess: async (data) => {
-      await queryClient.invalidateQueries({
-        queryKey: queryKeys.vendor(data.id),
-      });
+      if (data) {
+        await queryClient.invalidateQueries({
+          queryKey: queryKeys.vendor(data.id),
+        });
+      }
       await queryClient.invalidateQueries({ queryKey: queryKeys.vendors });
     },
   });
@@ -350,7 +396,7 @@ export const useDeleteVendor = () => {
 
   return useMutation({
     mutationFn: (id: number) =>
-      fetchJSON(`${API_BASE}/vendors/${id.toString()}`, {
+      fetchJSON(`${API_BASE}/v1/budget/vendors/${id.toString()}`, {
         method: "DELETE",
       }),
     onSuccess: async () => {
