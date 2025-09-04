@@ -6,8 +6,11 @@ const NavBar = () => {
   const drawerRef = useRef<HTMLInputElement>(null);
 
   const navItems = [
-    { id: 0, name: "Dashboard", path: "/" },
+    { id: 2, name: "Categories", path: "/" },
+    { id: 0, name: "Accounts", path: "accounts" },
     { id: 1, name: "Transactions", path: "transactions" },
+    { id: 3, name: "Tags", path: "tags" },
+    { id: 4, name: "Vendors", path: "vendors" },
   ];
 
   return (

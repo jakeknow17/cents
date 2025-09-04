@@ -1,590 +1,862 @@
 import { useState } from "react";
-import type { Transaction, BudgetCategory, Vendor, Account } from "../../types";
-import AddButton from "../../shared/ui/buttons/AddButton";
+import { useEffect } from "react";
 import {
-  dummyCategories,
-  dummyVendors,
-  dummyAccounts,
-  dummyTransactions,
-} from "../../shared/ui/dummy";
-import TransactionModal from "../../components/transactions/TransactionModal";
+  useTransactions,
+  useTransaction,
+  useCreateTransaction,
+  useUpdateTransaction,
+  useDeleteTransaction,
+  useAccounts,
+  useCategories,
+  useTags,
+  useVendors,
+} from "../../shared/query/hooks";
+import type { Transaction, TransactionRequest } from "../../types/budget";
 
 const TransactionsPage = () => {
-  // Dummy data - in a real app this would come from your backend
-  const [categories] = useState<BudgetCategory[]>(dummyCategories);
-  const [vendors] = useState<Vendor[]>(dummyVendors);
-  const [accounts] = useState<Account[]>(dummyAccounts);
-  const [transactions, setTransactions] =
-    useState<Transaction[]>(dummyTransactions);
-
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<number | "all">(
-    "all",
-  );
-  const [selectedType, setSelectedType] = useState<string>("all");
-  const [sortBy, setSortBy] = useState<"date" | "amount" | "description">(
-    "date",
-  );
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
-
-  // Modal state
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalMode, setModalMode] = useState<"add" | "edit">("add");
-  const [selectedTransaction, setSelectedTransaction] = useState<
-    Transaction | undefined
-  >(undefined);
-
-  // Helper functions to get related data
-  const getCategoryName = (categoryId: number) => {
-    return (
-      categories.find((cat) => cat.id === categoryId)?.name ||
-      "Unknown Category"
-    );
-  };
-
-  const getVendorName = (vendorId: number) => {
-    return vendors.find((ven) => ven.id === vendorId)?.name || "Unknown Vendor";
-  };
-
-  const getAccountName = (accountId: number) => {
-    return (
-      accounts.find((acc) => acc.id === accountId)?.name || "Unknown Account"
-    );
-  };
-
-  // Get unique categories for filtering
-  const types = ["all", "expense", "income"];
-
-  // Filter and sort transactions
-  const filteredTransactions = transactions
-    .filter((transaction) => {
-      const matchesSearch =
-        transaction.description
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase()) ||
-        getVendorName(transaction.vendorId)
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase());
-      const matchesCategory =
-        selectedCategory === "all" ||
-        transaction.categoryId === selectedCategory;
-      const matchesType =
-        selectedType === "all" || transaction.type === selectedType;
-
-      return matchesSearch && matchesCategory && matchesType;
-    })
-    .sort((a, b) => {
-      let comparison = 0;
-
-      switch (sortBy) {
-        case "date":
-          comparison = new Date(a.date).getTime() - new Date(b.date).getTime();
-          break;
-        case "amount":
-          comparison = Math.abs(a.amount) - Math.abs(b.amount);
-          break;
-        case "description":
-          comparison = a.description.localeCompare(b.description);
-          break;
-      }
-
-      return sortOrder === "asc" ? comparison : -comparison;
+  const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [newTransactionRequest, setNewTransactionRequest] =
+    useState<TransactionRequest>({
+      date: "",
+      amount: 0,
+      type: "EXPENSE" as "EXPENSE" | "INCOME",
+      description: "",
+      notes: "",
+      tagsIds: [],
+      categoryId: undefined,
+      vendorId: undefined,
+      accountId: undefined,
     });
+  const [editingTransaction, setEditingTransaction] =
+    useState<TransactionRequest | null>(null);
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-    }).format(Math.abs(amount));
-  };
+  const { data: transactions, isLoading: transactionsLoading } =
+    useTransactions();
+  const { data: transaction, isLoading: transactionLoading } = useTransaction(
+    selectedId || 0,
+  );
+  const { data: accounts } = useAccounts();
+  const { data: categories } = useCategories();
+  const { data: tags } = useTags();
+  const { data: vendors } = useVendors();
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
+  const createTransaction = useCreateTransaction();
+  const updateTransaction = useUpdateTransaction();
+  const deleteTransaction = useDeleteTransaction();
+
+  useEffect(() => {
+    console.log("transactions", transactions);
+  }, [transactions]);
+
+  const handleCreate = () => {
+    createTransaction.mutate(newTransactionRequest);
+    setNewTransactionRequest({
+      date: "",
+      amount: 0,
+      type: "EXPENSE",
+      description: "",
+      notes: "",
+      tagsIds: [],
+      categoryId: undefined,
+      vendorId: undefined,
+      accountId: undefined,
     });
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "completed":
-        return "badge-success";
-      case "pending":
-        return "badge-warning";
-      case "cancelled":
-        return "badge-error";
-      default:
-        return "badge-neutral";
+  const handleUpdate = () => {
+    if (transaction && editingTransaction) {
+      updateTransaction.mutate({
+        id: transaction.id,
+        transactionRequest: editingTransaction,
+      });
+      setEditingTransaction(null);
     }
   };
 
-  const getTypeColor = (type: string) => {
-    return type === "income" ? "text-success" : "text-error";
+  const handleEdit = (tx: Transaction | undefined) => {
+    if (tx) {
+      console.log("Editing transaction:", tx);
+      const editRequest: TransactionRequest = {
+        date: tx.date,
+        amount: tx.amount,
+        type: tx.type,
+        description: tx.description,
+        notes: tx.notes ?? "",
+        tagsIds: tx.tags.map((tag) => tag.id),
+        categoryId: tx.category?.id,
+        vendorId: tx.vendor?.id,
+        accountId: tx.account?.id,
+      };
+      setEditingTransaction(editRequest);
+    }
   };
 
-  const totalIncome = transactions
-    .filter((t) => t.type === "income")
-    .reduce((sum, t) => sum + t.amount, 0);
-
-  const totalExpenses = transactions
-    .filter((t) => t.type === "expense")
-    .reduce((sum, t) => sum + Math.abs(t.amount), 0);
-
-  const netAmount = totalIncome - totalExpenses;
-
-  const handleAddTransaction = () => {
-    setModalMode("add");
-    setSelectedTransaction(undefined);
-    setIsModalOpen(true);
+  const handleCancelEdit = () => {
+    setEditingTransaction(null);
   };
 
-  const handleEditTransaction = (transaction: Transaction) => {
-    setModalMode("edit");
-    setSelectedTransaction(transaction);
-    setIsModalOpen(true);
+  const handleDelete = (id: number) => {
+    deleteTransaction.mutate(id);
   };
 
-  const handleDeleteTransaction = (id: number) => {
-    // In a real app, you would call an API to delete the transaction
-    console.log(`Deleting transaction with id: ${id.toString()}`);
-    // For now, we'll just remove it from the dummy data
-    setTransactions(transactions.filter((t) => t.id !== id));
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setSelectedTransaction(undefined);
-  };
-
-  const handleAddNewTransaction = (newTransaction: Omit<Transaction, "id">) => {
-    // In a real app, you would call an API to add the transaction
-    console.log("Adding new transaction:", newTransaction);
-    // For now, we'll just add it to the dummy data
-    setTransactions([
-      ...transactions,
-      {
-        ...newTransaction,
-        id: Math.max(0, ...transactions.map((cat) => cat.id)) + 1,
-      },
-    ]);
-    handleCloseModal();
-  };
-
-  const handleEditExistingTransaction = (editedTransaction: Transaction) => {
-    // In a real app, you would call an API to edit the transaction
-    console.log("Editing transaction:", editedTransaction);
-    // For now, we'll just update it in the dummy data
-    setTransactions(
-      transactions.map((t) =>
-        t.id === editedTransaction.id ? editedTransaction : t,
-      ),
+  const handleTagToggle = (tagId: number) => {
+    console.log(
+      "Toggling tag:",
+      tagId,
+      "Current tagsIds:",
+      newTransactionRequest.tagsIds,
     );
-    handleCloseModal();
+    setNewTransactionRequest((prev) => ({
+      ...prev,
+      tagsIds: prev.tagsIds.includes(tagId)
+        ? prev.tagsIds.filter((id) => id !== tagId)
+        : [...prev.tagsIds, tagId],
+    }));
+  };
+
+  const handleEditTagToggle = (tagId: number) => {
+    console.log(
+      "Toggling edit tag:",
+      tagId,
+      "Current editingTransaction:",
+      editingTransaction,
+    );
+    if (editingTransaction) {
+      setEditingTransaction((prev) => {
+        if (!prev) return null;
+        return {
+          ...prev,
+          tagsIds: prev.tagsIds.includes(tagId)
+            ? prev.tagsIds.filter((id) => id !== tagId)
+            : [...prev.tagsIds, tagId],
+        };
+      });
+    }
   };
 
   return (
-    <div className="py-6">
-      <h1 className="text-3xl font-bold mb-6">Transactions</h1>
-
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <div className="stat bg-base-200 rounded-lg [&:not(:last-child)]:border-r-0">
-          <div className="stat-title">Total Income</div>
-          <div className="stat-value text-success">
-            {formatCurrency(totalIncome)}
-          </div>
-        </div>
-        <div className="stat bg-base-200 rounded-lg [&:not(:last-child)]:border-r-0">
-          <div className="stat-title">Total Expenses</div>
-          <div className="stat-value text-error">
-            {formatCurrency(totalExpenses)}
-          </div>
-        </div>
-        <div className="stat bg-base-200 rounded-lg [&:not(:last-child)]:border-r-0">
-          <div className="stat-title">Net Amount</div>
-          <div
-            className={`stat-value ${netAmount >= 0 ? "text-success" : "text-error"}`}
-          >
-            {formatCurrency(netAmount)}
-          </div>
-        </div>
+    <div className="container mx-auto p-6">
+      <div className="mb-8">
+        <h1 className="text-4xl font-bold mb-2">Transactions</h1>
+        <p className="text-base-content/70">Track your income and expenses</p>
       </div>
 
-      {/* Filters and Search */}
-      <div className="bg-base-200 rounded-lg p-6 mb-6">
-        {/* Mobile: Stacked layout */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {/* Search */}
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text">Search</span>
-            </label>
-            <input
-              type="text"
-              placeholder="Search transactions..."
-              className="input input-bordered w-full"
-              value={searchTerm}
-              onChange={(e) => {
-                setSearchTerm(e.target.value);
-              }}
-            />
-          </div>
-
-          {/* Category Filter */}
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text">Category</span>
-            </label>
-            <select
-              className="select select-bordered w-full"
-              value={selectedCategory}
-              onChange={(e) => {
-                setSelectedCategory(
-                  e.target.value === "all" ? "all" : Number(e.target.value),
-                );
-              }}
-            >
-              <option value="all">All Categories</option>
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Type Filter */}
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text">Type</span>
-            </label>
-            <select
-              className="select select-bordered w-full"
-              value={selectedType}
-              onChange={(e) => {
-                setSelectedType(e.target.value);
-              }}
-            >
-              {types.map((type) => (
-                <option key={type} value={type}>
-                  {type === "all"
-                    ? "All Types"
-                    : type.charAt(0).toUpperCase() + type.slice(1)}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Sort */}
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text">Sort By</span>
-            </label>
-            <div className="flex gap-2">
-              <select
-                className="select select-bordered flex-1"
-                value={sortBy}
+      {/* Create Transaction Form */}
+      <div className="card bg-base-100 shadow-xl mb-8">
+        <div className="card-body">
+          <h2 className="card-title text-2xl mb-4">Create New Transaction</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text">Date</span>
+              </label>
+              <input
+                type="date"
+                className="input input-bordered"
+                value={newTransactionRequest.date}
                 onChange={(e) => {
-                  setSortBy(
-                    e.target.value as "date" | "amount" | "description",
-                  );
+                  setNewTransactionRequest({
+                    ...newTransactionRequest,
+                    date: e.target.value,
+                  });
+                }}
+              />
+            </div>
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text">Amount</span>
+              </label>
+              <input
+                type="number"
+                className="input input-bordered"
+                value={newTransactionRequest.amount}
+                onChange={(e) => {
+                  setNewTransactionRequest({
+                    ...newTransactionRequest,
+                    amount: Number(e.target.value),
+                  });
+                }}
+                placeholder="0.00"
+                step="0.01"
+              />
+            </div>
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text">Type</span>
+              </label>
+              <select
+                className="select select-bordered"
+                value={newTransactionRequest.type}
+                onChange={(e) => {
+                  setNewTransactionRequest({
+                    ...newTransactionRequest,
+                    type: e.target.value as "EXPENSE" | "INCOME",
+                  });
                 }}
               >
-                <option value="date">Date</option>
-                <option value="amount">Amount</option>
-                <option value="description">Description</option>
+                <option value="EXPENSE">Expense</option>
+                <option value="INCOME">Income</option>
               </select>
-              <button
-                className="btn btn-square btn-sm"
-                onClick={() => {
-                  setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+            </div>
+            <div className="form-control md:col-span-2">
+              <label className="label">
+                <span className="label-text">Description</span>
+              </label>
+              <input
+                type="text"
+                className="input input-bordered"
+                value={newTransactionRequest.description}
+                onChange={(e) => {
+                  setNewTransactionRequest({
+                    ...newTransactionRequest,
+                    description: e.target.value,
+                  });
+                }}
+                placeholder="Enter transaction description"
+              />
+            </div>
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text">Category</span>
+              </label>
+              <select
+                className="select select-bordered"
+                value={newTransactionRequest.categoryId || ""}
+                onChange={(e) => {
+                  setNewTransactionRequest({
+                    ...newTransactionRequest,
+                    categoryId: e.target.value
+                      ? Number(e.target.value)
+                      : undefined,
+                  });
                 }}
               >
-                {sortOrder === "asc" ? "↑" : "↓"}
-              </button>
+                <option value="">No category</option>
+                {categories?.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text">Vendor</span>
+              </label>
+              <select
+                className="select select-bordered"
+                value={newTransactionRequest.vendorId || ""}
+                onChange={(e) => {
+                  setNewTransactionRequest({
+                    ...newTransactionRequest,
+                    vendorId: e.target.value
+                      ? Number(e.target.value)
+                      : undefined,
+                  });
+                }}
+              >
+                <option value="">No vendor</option>
+                {vendors?.map((vendor) => (
+                  <option key={vendor.id} value={vendor.id}>
+                    {vendor.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text">Account</span>
+              </label>
+              <select
+                className="select select-bordered"
+                value={newTransactionRequest.accountId || ""}
+                onChange={(e) => {
+                  setNewTransactionRequest({
+                    ...newTransactionRequest,
+                    accountId: e.target.value
+                      ? Number(e.target.value)
+                      : undefined,
+                  });
+                }}
+              >
+                <option value="">No account</option>
+                {accounts?.map((account) => (
+                  <option key={account.id} value={account.id}>
+                    {account.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="form-control md:col-span-2">
+              <label className="label">
+                <span className="label-text">Notes (Optional)</span>
+              </label>
+              <input
+                type="text"
+                className="input input-bordered"
+                value={newTransactionRequest.notes || ""}
+                onChange={(e) => {
+                  setNewTransactionRequest({
+                    ...newTransactionRequest,
+                    notes: e.target.value,
+                  });
+                }}
+                placeholder="Additional notes"
+              />
             </div>
           </div>
+
+          {/* Tags Section */}
+          {tags && tags.length > 0 && (
+            <div className="form-control mt-4">
+              <label className="label">
+                <span className="label-text">Tags</span>
+              </label>
+              <div className="flex flex-wrap gap-2">
+                {tags.map((tag) => {
+                  console.log(
+                    "Rendering tag:",
+                    tag,
+                    "Current tagsIds:",
+                    newTransactionRequest.tagsIds,
+                  );
+                  return (
+                    <div key={tag.id} className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        className="checkbox checkbox-sm"
+                        checked={newTransactionRequest.tagsIds.includes(tag.id)}
+                        onChange={() => {
+                          handleTagToggle(tag.id);
+                        }}
+                      />
+                      <span
+                        className="badge badge-outline cursor-pointer"
+                        onClick={() => {
+                          handleTagToggle(tag.id);
+                        }}
+                      >
+                        {tag.name}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          <div className="form-control mt-6">
+            <button
+              className="btn btn-primary"
+              onClick={handleCreate}
+              disabled={
+                createTransaction.isPending ||
+                !newTransactionRequest.date ||
+                !newTransactionRequest.description.trim()
+              }
+            >
+              {createTransaction.isPending ? (
+                <>
+                  <span className="loading loading-spinner loading-sm"></span>
+                  Creating...
+                </>
+              ) : (
+                "Create Transaction"
+              )}
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Transactions List */}
-      <div className="bg-base-200 rounded-lg p-6">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-semibold">
-            Transactions ({filteredTransactions.length})
-          </h2>
-          <AddButton onClick={handleAddTransaction} />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Transactions List */}
+        <div className="card bg-base-100 shadow-xl">
+          <div className="card-body">
+            <h2 className="card-title text-2xl mb-4">All Transactions</h2>
+            {transactionsLoading ? (
+              <div className="flex justify-center py-8">
+                <span className="loading loading-spinner loading-lg"></span>
+              </div>
+            ) : (
+              <div className="space-y-2 max-h-96 overflow-y-auto">
+                {transactions?.map((t) => (
+                  <div key={t.id} className="card bg-base-200 shadow-sm">
+                    <div className="card-body p-4">
+                      <div className="flex justify-between items-start">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <h3 className="font-semibold">{t.description}</h3>
+                            <span
+                              className={`badge ${t.type === "INCOME" ? "badge-success" : "badge-error"}`}
+                            >
+                              {t.type}
+                            </span>
+                          </div>
+                          <p className="text-sm text-base-content/70">
+                            {t.date} • ${t.amount.toFixed(2)}
+                          </p>
+                          {t.notes && (
+                            <p className="text-xs text-base-content/50 mt-1">
+                              {t.notes}
+                            </p>
+                          )}
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                            className="btn btn-sm btn-outline"
+                            onClick={() => {
+                              setSelectedId(t.id);
+                            }}
+                          >
+                            View
+                          </button>
+                          <button
+                            className="btn btn-sm btn-warning"
+                            onClick={() => {
+                              handleEdit(t);
+                            }}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            className="btn btn-sm btn-error"
+                            onClick={() => {
+                              handleDelete(t.id);
+                            }}
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                {transactions?.length === 0 && (
+                  <div className="text-center py-8 text-base-content/50">
+                    No transactions found. Create your first transaction above.
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* Desktop: Table Layout */}
-        <div className="hidden lg:block overflow-x-auto">
-          <table className="table table-zebra w-full">
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Description</th>
-                <th>Vendor</th>
-                <th>Category</th>
-                <th>Amount</th>
-                <th>Type</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredTransactions.map((transaction) => (
-                <tr key={transaction.id} className="hover">
-                  <td className="font-medium">
-                    {formatDate(transaction.date)}
-                  </td>
-                  <td>
-                    <div>
-                      <div className="font-medium">
-                        {transaction.description}
+        {/* Selected Transaction Details */}
+        <div className="card bg-base-100 shadow-xl">
+          <div className="card-body">
+            <h2 className="card-title text-2xl mb-4">Transaction Details</h2>
+            {selectedId ? (
+              transactionLoading ? (
+                <div className="flex justify-center py-8">
+                  <span className="loading loading-spinner loading-lg"></span>
+                </div>
+              ) : transaction ? (
+                <div className="space-y-4">
+                  <div className="stats shadow">
+                    <div className="stat">
+                      <div className="stat-title">Transaction ID</div>
+                      <div className="stat-value text-primary">
+                        {transaction.id}
                       </div>
-                      {transaction.notes && (
-                        <div className="text-sm text-base-content/70">
-                          {transaction.notes}
+                    </div>
+                  </div>
+
+                  {editingTransaction ? (
+                    // Edit Form
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="form-control">
+                          <label className="label">
+                            <span className="label-text">Date</span>
+                          </label>
+                          <input
+                            type="date"
+                            className="input input-bordered"
+                            value={editingTransaction.date}
+                            onChange={(e) => {
+                              setEditingTransaction((prev) =>
+                                prev ? { ...prev, date: e.target.value } : null,
+                              );
+                            }}
+                          />
+                        </div>
+                        <div className="form-control">
+                          <label className="label">
+                            <span className="label-text">Amount</span>
+                          </label>
+                          <input
+                            type="number"
+                            className="input input-bordered"
+                            value={editingTransaction.amount}
+                            onChange={(e) => {
+                              setEditingTransaction((prev) =>
+                                prev
+                                  ? { ...prev, amount: Number(e.target.value) }
+                                  : null,
+                              );
+                            }}
+                            step="0.01"
+                          />
+                        </div>
+                        <div className="form-control">
+                          <label className="label">
+                            <span className="label-text">Type</span>
+                          </label>
+                          <select
+                            className="select select-bordered"
+                            value={editingTransaction.type}
+                            onChange={(e) => {
+                              setEditingTransaction((prev) =>
+                                prev
+                                  ? {
+                                      ...prev,
+                                      type: e.target.value as
+                                        | "EXPENSE"
+                                        | "INCOME",
+                                    }
+                                  : null,
+                              );
+                            }}
+                          >
+                            <option value="EXPENSE">Expense</option>
+                            <option value="INCOME">Income</option>
+                          </select>
+                        </div>
+                        <div className="form-control">
+                          <label className="label">
+                            <span className="label-text">Category</span>
+                          </label>
+                          <select
+                            className="select select-bordered"
+                            value={editingTransaction.categoryId || ""}
+                            onChange={(e) => {
+                              setEditingTransaction((prev) =>
+                                prev
+                                  ? {
+                                      ...prev,
+                                      categoryId: e.target.value
+                                        ? Number(e.target.value)
+                                        : undefined,
+                                    }
+                                  : null,
+                              );
+                            }}
+                          >
+                            <option value="">No category</option>
+                            {categories?.map((cat) => (
+                              <option key={cat.id} value={cat.id}>
+                                {cat.name}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                        <div className="form-control">
+                          <label className="label">
+                            <span className="label-text">Vendor</span>
+                          </label>
+                          <select
+                            className="select select-bordered"
+                            value={editingTransaction.vendorId || ""}
+                            onChange={(e) => {
+                              setEditingTransaction((prev) =>
+                                prev
+                                  ? {
+                                      ...prev,
+                                      vendorId: e.target.value
+                                        ? Number(e.target.value)
+                                        : undefined,
+                                    }
+                                  : null,
+                              );
+                            }}
+                          >
+                            <option value="">No vendor</option>
+                            {vendors?.map((vendor) => (
+                              <option key={vendor.id} value={vendor.id}>
+                                {vendor.name}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                        <div className="form-control">
+                          <label className="label">
+                            <span className="label-text">Account</span>
+                          </label>
+                          <select
+                            className="select select-bordered"
+                            value={editingTransaction.accountId || ""}
+                            onChange={(e) => {
+                              setEditingTransaction((prev) =>
+                                prev
+                                  ? {
+                                      ...prev,
+                                      accountId: e.target.value
+                                        ? Number(e.target.value)
+                                        : undefined,
+                                    }
+                                  : null,
+                              );
+                            }}
+                          >
+                            <option value="">No account</option>
+                            {accounts?.map((account) => (
+                              <option key={account.id} value={account.id}>
+                                {account.name}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+
+                      <div className="form-control">
+                        <label className="label">
+                          <span className="label-text">Description</span>
+                        </label>
+                        <input
+                          type="text"
+                          className="input input-bordered"
+                          value={editingTransaction.description}
+                          onChange={(e) => {
+                            setEditingTransaction((prev) =>
+                              prev
+                                ? { ...prev, description: e.target.value }
+                                : null,
+                            );
+                          }}
+                        />
+                      </div>
+
+                      <div className="form-control">
+                        <label className="label">
+                          <span className="label-text">Notes (Optional)</span>
+                        </label>
+                        <input
+                          type="text"
+                          className="input input-bordered"
+                          value={editingTransaction.notes || ""}
+                          onChange={(e) => {
+                            setEditingTransaction((prev) =>
+                              prev ? { ...prev, notes: e.target.value } : null,
+                            );
+                          }}
+                        />
+                      </div>
+
+                      {/* Tags Section */}
+                      {tags && tags.length > 0 && (
+                        <div className="form-control">
+                          <label className="label">
+                            <span className="label-text">Tags</span>
+                          </label>
+                          <div className="flex flex-wrap gap-2">
+                            {tags.map((tag) => (
+                              <div
+                                key={tag.id}
+                                className="flex items-center gap-2"
+                              >
+                                <input
+                                  type="checkbox"
+                                  className="checkbox checkbox-sm"
+                                  checked={editingTransaction.tagsIds.includes(
+                                    tag.id,
+                                  )}
+                                  onChange={() => {
+                                    handleEditTagToggle(tag.id);
+                                  }}
+                                />
+                                <span
+                                  className="badge badge-outline cursor-pointer"
+                                  onClick={() => {
+                                    handleEditTagToggle(tag.id);
+                                  }}
+                                >
+                                  {tag.name}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
                         </div>
                       )}
+
+                      <div className="flex gap-2">
+                        <button
+                          className="btn btn-primary"
+                          onClick={handleUpdate}
+                          disabled={updateTransaction.isPending}
+                        >
+                          {updateTransaction.isPending ? (
+                            <>
+                              <span className="loading loading-spinner loading-sm"></span>
+                              Updating...
+                            </>
+                          ) : (
+                            "Save Changes"
+                          )}
+                        </button>
+                        <button
+                          className="btn btn-outline"
+                          onClick={handleCancelEdit}
+                        >
+                          Cancel
+                        </button>
+                      </div>
                     </div>
-                  </td>
-                  <td>{getVendorName(transaction.vendorId)}</td>
-                  <td>
-                    <div className="badge badge-outline">
-                      {getCategoryName(transaction.categoryId)}
-                    </div>
-                  </td>
-                  <td className={`font-bold ${getTypeColor(transaction.type)}`}>
-                    {transaction.type === "expense" ? "-" : "+"}
-                    {formatCurrency(transaction.amount)}
-                  </td>
-                  <td>
-                    <div className="flex items-center gap-2">
-                      <span
-                        className={`badge ${transaction.type === "income" ? "badge-success" : "badge-error"}`}
-                      >
-                        {transaction.type}
-                      </span>
-                      {transaction.recurring && (
-                        <span className="badge badge-info badge-sm">
-                          Recurring
-                        </span>
+                  ) : (
+                    // View Mode
+                    <div className="space-y-4">
+                      <div className="form-control">
+                        <label className="label">
+                          <span className="label-text font-semibold">Date</span>
+                        </label>
+                        <input
+                          type="text"
+                          className="input input-bordered"
+                          value={transaction.date}
+                          readOnly
+                        />
+                      </div>
+                      <div className="form-control">
+                        <label className="label">
+                          <span className="label-text font-semibold">
+                            Amount
+                          </span>
+                        </label>
+                        <input
+                          type="text"
+                          className="input input-bordered"
+                          value={`$${transaction.amount.toFixed(2)}`}
+                          readOnly
+                        />
+                      </div>
+                      <div className="form-control">
+                        <label className="label">
+                          <span className="label-text font-semibold">Type</span>
+                        </label>
+                        <div className="flex items-center gap-2">
+                          <span
+                            className={`badge ${transaction.type === "INCOME" ? "badge-success" : "badge-error"}`}
+                          >
+                            {transaction.type}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="form-control">
+                        <label className="label">
+                          <span className="label-text font-semibold">
+                            Description
+                          </span>
+                        </label>
+                        <input
+                          type="text"
+                          className="input input-bordered"
+                          value={transaction.description}
+                          readOnly
+                        />
+                      </div>
+                      {transaction.notes && (
+                        <div className="form-control">
+                          <label className="label">
+                            <span className="label-text font-semibold">
+                              Notes
+                            </span>
+                          </label>
+                          <input
+                            type="text"
+                            className="input input-bordered"
+                            value={transaction.notes}
+                            readOnly
+                          />
+                        </div>
                       )}
+                      <div className="form-control">
+                        <label className="label">
+                          <span className="label-text font-semibold">
+                            Category
+                          </span>
+                        </label>
+                        <input
+                          type="text"
+                          className="input input-bordered"
+                          value={
+                            transaction.category?.id
+                              ? `Category ID: ${transaction.category.id.toString()}`
+                              : "No category"
+                          }
+                          readOnly
+                        />
+                      </div>
+                      <div className="form-control">
+                        <label className="label">
+                          <span className="label-text font-semibold">
+                            Vendor
+                          </span>
+                        </label>
+                        <input
+                          type="text"
+                          className="input input-bordered"
+                          value={
+                            transaction.vendor?.id
+                              ? `Vendor ID: ${transaction.vendor.id.toString()}`
+                              : "No vendor"
+                          }
+                          readOnly
+                        />
+                      </div>
+                      <div className="form-control">
+                        <label className="label">
+                          <span className="label-text font-semibold">
+                            Account
+                          </span>
+                        </label>
+                        <input
+                          type="text"
+                          className="input input-bordered"
+                          value={
+                            transaction.account?.id
+                              ? `Account ID: ${transaction.account.id.toString()}`
+                              : "No account"
+                          }
+                          readOnly
+                        />
+                      </div>
+                      <div className="form-control">
+                        <label className="label">
+                          <span className="label-text font-semibold">Tags</span>
+                        </label>
+                        <div className="flex flex-wrap gap-1">
+                          {transaction.tags.length > 0 ? (
+                            transaction.tags.map((tag) => (
+                              <span
+                                key={tag.id}
+                                className="badge badge-outline"
+                              >
+                                Tag ID: {tag.id}
+                                Tag Name: {tag.name}
+                              </span>
+                            ))
+                          ) : (
+                            <span className="text-base-content/50">
+                              No tags
+                            </span>
+                          )}
+                        </div>
+                      </div>
                     </div>
-                  </td>
-                  <td>
-                    <span
-                      className={`badge ${getStatusColor(transaction.status)}`}
-                    >
-                      {transaction.status}
-                    </span>
-                  </td>
-                  <td>
-                    <div className="flex gap-2">
-                      <button
-                        className="btn btn-ghost btn-xs"
-                        onClick={() => {
-                          handleEditTransaction(transaction);
-                        }}
-                      >
-                        <svg
-                          className="w-4 h-4"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                          />
-                        </svg>
-                      </button>
-                      <button
-                        className="btn btn-ghost btn-xs text-error"
-                        onClick={() => {
-                          handleDeleteTransaction(transaction.id);
-                        }}
-                      >
-                        <svg
-                          className="w-4 h-4"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                          />
-                        </svg>
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Mobile: Card Layout */}
-        <div className="lg:hidden space-y-4">
-          {filteredTransactions.map((transaction) => (
-            <div
-              key={transaction.id}
-              className="bg-base-100 rounded-lg p-4 border border-base-300"
-            >
-              {/* Header Row */}
-              <div className="flex justify-between items-start mb-3">
-                <div className="flex-1">
-                  <h3 className="font-semibold text-lg">
-                    {transaction.description}
-                  </h3>
-                  <p className="text-base-content/70 text-sm">
-                    {getVendorName(transaction.vendorId)}
-                  </p>
+                  )}
                 </div>
-                <div className="text-right">
-                  <div
-                    className={`text-xl font-bold ${getTypeColor(transaction.type)}`}
-                  >
-                    {transaction.type === "expense" ? "-" : "+"}
-                    {formatCurrency(transaction.amount)}
-                  </div>
-                  <div className="text-sm text-base-content/70">
-                    {formatDate(transaction.date)}
-                  </div>
+              ) : (
+                <div className="alert alert-error">
+                  <span>Transaction not found</span>
                 </div>
+              )
+            ) : (
+              <div className="text-center py-8 text-base-content/50">
+                Select a transaction to view details
               </div>
-
-              {/* Category and Type */}
-              <div className="flex flex-wrap gap-2 mb-3">
-                <span className="badge badge-outline">
-                  {getCategoryName(transaction.categoryId)}
-                </span>
-                <span
-                  className={`badge ${transaction.type === "income" ? "badge-success" : "badge-error"}`}
-                >
-                  {transaction.type}
-                </span>
-                {transaction.recurring && (
-                  <span className="badge badge-info badge-sm">Recurring</span>
-                )}
-                <span className={`badge ${getStatusColor(transaction.status)}`}>
-                  {transaction.status}
-                </span>
-              </div>
-
-              {/* Notes */}
-              {transaction.notes && (
-                <p className="text-sm text-base-content/70 mb-3">
-                  {transaction.notes}
-                </p>
-              )}
-
-              {/* Tags */}
-              {transaction.tags && transaction.tags.length > 0 && (
-                <div className="flex flex-wrap gap-1 mb-3">
-                  {transaction.tags.map((tag, index) => (
-                    <span key={index} className="badge badge-neutral badge-sm">
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              )}
-
-              {/* Account Info */}
-              {transaction.accountId && (
-                <div className="text-xs text-base-content/50 mb-3">
-                  Account: {getAccountName(transaction.accountId)}
-                </div>
-              )}
-
-              {/* Actions */}
-              <div className="flex justify-end gap-2 pt-2 border-t border-base-300">
-                <button
-                  className="btn btn-ghost btn-xs"
-                  onClick={() => {
-                    handleEditTransaction(transaction);
-                  }}
-                >
-                  <svg
-                    className="w-4 h-4 mr-1"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                    />
-                  </svg>
-                  Edit
-                </button>
-                <button
-                  className="btn btn-ghost btn-xs text-error"
-                  onClick={() => {
-                    handleDeleteTransaction(transaction.id);
-                  }}
-                >
-                  <svg
-                    className="w-4 h-4 mr-1"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                    />
-                  </svg>
-                  Delete
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {filteredTransactions.length === 0 && (
-          <div className="text-center py-8 text-base-content/70">
-            <svg
-              className="w-16 h-16 mx-auto mb-4 opacity-50"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-              />
-            </svg>
-            <p className="text-lg">No transactions found</p>
-            <p className="text-sm">
-              Try adjusting your filters or add a new transaction
-            </p>
+            )}
           </div>
-        )}
+        </div>
       </div>
-
-      {/* Transaction Modal */}
-      <TransactionModal
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        mode={modalMode}
-        transaction={selectedTransaction}
-        onAdd={handleAddNewTransaction}
-        onEdit={handleEditExistingTransaction}
-      />
     </div>
   );
 };
