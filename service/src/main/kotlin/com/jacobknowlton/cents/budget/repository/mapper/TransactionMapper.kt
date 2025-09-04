@@ -23,7 +23,12 @@ object TransactionMapper : RecordMapper<Record, Transaction> {
                 type = enumValueOf<Transaction.Type>(it.get(BUDGET_TRANSACTION.TYPE, String::class.java)),
                 description = it.get(BUDGET_TRANSACTION.DESCRIPTION, String::class.java),
                 notes = it.get(BUDGET_TRANSACTION.NOTES, String::class.java),
-                tags = it.get(TransactionRepository.BUDGET_TRANSACTION_TAGS_FIELD, List::class.java).filterIsInstance<Tag>(),
+                tags = try {
+                    it.get(TransactionRepository.BUDGET_TRANSACTION_TAGS_FIELD, List::class.java)
+                        .filterIsInstance<Tag>()
+                } catch (_: Exception) {
+                    emptyList()
+                },
                 category = if (it.get(BUDGET_CATEGORY.ID) != null) CategoryMapper.map(it) else null,
                 vendor = if (it.get(BUDGET_VENDOR.ID) != null) VendorMapper.map(it) else null,
                 account = if (it.get(BUDGET_ACCOUNT.ID) != null) AccountMapper.map(it) else null,

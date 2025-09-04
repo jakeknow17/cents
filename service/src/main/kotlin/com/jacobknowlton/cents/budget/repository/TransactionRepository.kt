@@ -29,12 +29,7 @@ class TransactionRepository(
             BUDGET_CATEGORY.asterisk(),
             BUDGET_VENDOR.asterisk(),
             BUDGET_ACCOUNT.asterisk(),
-            multiset(dsl.select(
-                BUDGET_TAG.ID,
-                BUDGET_TAG.NAME,
-                BUDGET_TAG.CREATED_AT,
-                BUDGET_TAG.UPDATED_AT
-            )
+            multiset(dsl.select(BUDGET_TAG.asterisk())
                 .from(BUDGET_TAG)
                 .join(BUDGET_TRANSACTION_TAG).on(BUDGET_TAG.ID.eq(BUDGET_TRANSACTION_TAG.BUDGET_TAG_ID))
                 .where(BUDGET_TRANSACTION_TAG.BUDGET_TRANSACTION_ID.eq(BUDGET_TRANSACTION.ID))
@@ -54,12 +49,7 @@ class TransactionRepository(
             BUDGET_CATEGORY.asterisk(),
             BUDGET_VENDOR.asterisk(),
             BUDGET_ACCOUNT.asterisk(),
-            multiset(dsl.select(
-                BUDGET_TAG.ID,
-                BUDGET_TAG.NAME,
-                BUDGET_TAG.CREATED_AT,
-                BUDGET_TAG.UPDATED_AT
-            )
+            multiset(dsl.select(BUDGET_TAG.asterisk())
                 .from(BUDGET_TAG)
                 .join(BUDGET_TRANSACTION_TAG).on(BUDGET_TAG.ID.eq(BUDGET_TRANSACTION_TAG.BUDGET_TAG_ID))
                 .where(BUDGET_TRANSACTION_TAG.BUDGET_TRANSACTION_ID.eq(BUDGET_TRANSACTION.ID))
