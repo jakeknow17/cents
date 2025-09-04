@@ -14,7 +14,7 @@ RUN npm run build
 FROM nginx:alpine
 
 COPY --from=build /app/dist/ /usr/share/nginx/html/
-COPY nginx/nginx-reverse-proxy.conf /etc/nginx/nginx.conf
+COPY nginx/nginx-http-only.conf /etc/nginx/nginx.conf
 
 EXPOSE 80
 
