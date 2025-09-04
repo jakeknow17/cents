@@ -38,7 +38,7 @@ services:
       - ./service/src:/app/src
     restart: unless-stopped
 
-  # Nginx Reverse Proxy (serves frontend + proxies backend)
+  # Nginx Reverse Proxy (builds and serves frontend + proxies backend)
   nginx:
     build:
       context: .
@@ -46,9 +46,26 @@ services:
     container_name: cents-nginx
     ports:
       - "80:80"
+      - "443:443"
     depends_on:
       - backend
+    volumes:
+      - certbot_certs:/etc/letsencrypt
+      - certbot_www:/var/www/certbot
     restart: unless-stopped
+
+  # Certbot for automatic SSL certificate management
+  certbot:
+    image: certbot/certbot
+    container_name: cents-certbot
+    volumes:
+      - certbot_certs:/etc/letsencrypt
+      - certbot_www:/var/www/certbot
+    command: certonly --webroot --webroot-path=/var/www/certbot --email jacob@jacobknowlton.com --agree-tos --no-eff-email -d cents.jacobknowlton.com -d www.cents.jacobknowlton.com
+    depends_on:
+      - nginx
 
 volumes:
   postgres_data:
+  certbot_certs:
+  certbot_www:
