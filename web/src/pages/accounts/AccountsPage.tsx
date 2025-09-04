@@ -6,7 +6,7 @@ import {
   useUpdateAccount,
   useDeleteAccount,
 } from "../../shared/query/hooks";
-import type { AccountRequest } from "../../types/budget";
+import type { Account, AccountRequest } from "../../types/budget";
 import { toAccountType } from "../../types/budget";
 
 const AccountsPage = () => {
@@ -14,6 +14,7 @@ const AccountsPage = () => {
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [newAccountRequest, setNewAccountRequest] =
     useState(initAccountRequest);
+  const [editingAccount, setEditingAccount] = useState<AccountRequest | null>(null);
 
   const { data: accounts, isLoading: accountsLoading } = useAccounts();
   const { data: account, isLoading: accountLoading } = useAccount(
@@ -29,13 +30,24 @@ const AccountsPage = () => {
   };
 
   const handleUpdate = () => {
-    if (account) {
-      const updatedRequest: AccountRequest = {
-        name: account.name + " (Updated)",
-        type: account.type,
-      };
-      updateAccount.mutate({ id: account.id, accountRequest: updatedRequest });
+    if (account && editingAccount) {
+      updateAccount.mutate({ id: account.id, accountRequest: editingAccount });
+      setEditingAccount(null);
     }
+  };
+
+  const handleEdit = (acc: Account | undefined) => {
+    if (acc) {
+      const editRequest: AccountRequest = {
+        name: acc.name,
+        type: acc.type,
+      };
+      setEditingAccount(editRequest);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingAccount(null);
   };
 
   const handleDelete = (id: number) => {
@@ -151,10 +163,11 @@ const AccountsPage = () => {
                           <button
                             className="btn btn-sm btn-warning"
                             onClick={() => {
-                              handleUpdate();
+                              setSelectedId(acc.id);
+                              handleEdit(acc);
                             }}
                           >
-                            Update
+                            Edit
                           </button>
                           <button
                             className="btn btn-sm btn-error"
@@ -198,28 +211,92 @@ const AccountsPage = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="form-control">
-                    <label className="label">
-                      <span className="label-text font-semibold">Name</span>
-                    </label>
-                    <input
-                      type="text"
-                      className="input input-bordered"
-                      value={account.name}
-                      readOnly
-                    />
-                  </div>
-                  <div className="form-control">
-                    <label className="label">
-                      <span className="label-text font-semibold">Type</span>
-                    </label>
-                    <input
-                      type="text"
-                      className="input input-bordered"
-                      value={account.type}
-                      readOnly
-                    />
-                  </div>
+                  
+                  {editingAccount ? (
+                    // Edit Form
+                    <div className="space-y-4">
+                      <div className="form-control">
+                        <label className="label">
+                          <span className="label-text">Account Name</span>
+                        </label>
+                        <input
+                          type="text"
+                          className="input input-bordered"
+                          value={editingAccount.name}
+                          onChange={(e) => {
+                            setEditingAccount(prev => prev ? { ...prev, name: e.target.value } : null);
+                          }}
+                        />
+                      </div>
+                      <div className="form-control">
+                        <label className="label">
+                          <span className="label-text">Account Type</span>
+                        </label>
+                        <select
+                          className="select select-bordered"
+                          value={editingAccount.type}
+                          onChange={(e) => {
+                            setEditingAccount(prev => prev ? { ...prev, type: toAccountType(e.target.value) } : null);
+                          }}
+                        >
+                          <option value="CHECKING">Checking</option>
+                          <option value="SAVINGS">Savings</option>
+                          <option value="CREDIT">Credit</option>
+                          <option value="INVESTMENT">Investment</option>
+                          <option value="VENMO">Venmo</option>
+                          <option value="OTHER">Other</option>
+                        </select>
+                      </div>
+                      <div className="flex gap-2">
+                        <button 
+                          className="btn btn-primary"
+                          onClick={handleUpdate}
+                          disabled={updateAccount.isPending}
+                        >
+                          {updateAccount.isPending ? (
+                            <>
+                              <span className="loading loading-spinner loading-sm"></span>
+                              Updating...
+                            </>
+                          ) : (
+                            "Save Changes"
+                          )}
+                        </button>
+                        <button 
+                          className="btn btn-outline"
+                          onClick={handleCancelEdit}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    // View Mode
+                    <div className="space-y-4">
+                      <div className="form-control">
+                        <label className="label">
+                          <span className="label-text font-semibold">Name</span>
+                        </label>
+                        <input
+                          type="text"
+                          className="input input-bordered"
+                          value={account.name}
+                          readOnly
+                        />
+                      </div>
+                      <div className="form-control">
+                        <label className="label">
+                          <span className="label-text font-semibold">Type</span>
+                        </label>
+                        <input
+                          type="text"
+                          className="input input-bordered"
+                          value={account.type}
+                          readOnly
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="alert alert-error">

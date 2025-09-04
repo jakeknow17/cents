@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useEffect } from "react";
 import {
   useTransactions,
   useTransaction,
@@ -44,9 +43,6 @@ const TransactionsPage = () => {
   const updateTransaction = useUpdateTransaction();
   const deleteTransaction = useDeleteTransaction();
 
-  useEffect(() => {
-    console.log("transactions", transactions);
-  }, [transactions]);
 
   const handleCreate = () => {
     createTransaction.mutate(newTransactionRequest);
@@ -75,7 +71,6 @@ const TransactionsPage = () => {
 
   const handleEdit = (tx: Transaction | undefined) => {
     if (tx) {
-      console.log("Editing transaction:", tx);
       const editRequest: TransactionRequest = {
         date: tx.date,
         amount: tx.amount,
@@ -100,12 +95,6 @@ const TransactionsPage = () => {
   };
 
   const handleTagToggle = (tagId: number) => {
-    console.log(
-      "Toggling tag:",
-      tagId,
-      "Current tagsIds:",
-      newTransactionRequest.tagsIds,
-    );
     setNewTransactionRequest((prev) => ({
       ...prev,
       tagsIds: prev.tagsIds.includes(tagId)
@@ -115,12 +104,6 @@ const TransactionsPage = () => {
   };
 
   const handleEditTagToggle = (tagId: number) => {
-    console.log(
-      "Toggling edit tag:",
-      tagId,
-      "Current editingTransaction:",
-      editingTransaction,
-    );
     if (editingTransaction) {
       setEditingTransaction((prev) => {
         if (!prev) return null;
@@ -313,14 +296,7 @@ const TransactionsPage = () => {
                 <span className="label-text">Tags</span>
               </label>
               <div className="flex flex-wrap gap-2">
-                {tags.map((tag) => {
-                  console.log(
-                    "Rendering tag:",
-                    tag,
-                    "Current tagsIds:",
-                    newTransactionRequest.tagsIds,
-                  );
-                  return (
+                {tags.map((tag) => (
                     <div key={tag.id} className="flex items-center gap-2">
                       <input
                         type="checkbox"
@@ -339,8 +315,7 @@ const TransactionsPage = () => {
                         {tag.name}
                       </span>
                     </div>
-                  );
-                })}
+                ))}
               </div>
             </div>
           )}
@@ -413,6 +388,7 @@ const TransactionsPage = () => {
                           <button
                             className="btn btn-sm btn-warning"
                             onClick={() => {
+                              setSelectedId(t.id)
                               handleEdit(t);
                             }}
                           >

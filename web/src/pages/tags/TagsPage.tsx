@@ -6,7 +6,7 @@ import {
   useUpdateTag,
   useDeleteTag,
 } from "../../shared/query/hooks";
-import type { TagRequest } from "../../types/budget";
+import type { Tag, TagRequest } from "../../types/budget";
 
 const TagsPage = () => {
   const [selectedId, setSelectedId] = useState<number | null>(null);
@@ -14,6 +14,7 @@ const TagsPage = () => {
     name: "",
     transactionsIds: [],
   });
+  const [editingTag, setEditingTag] = useState<TagRequest | null>(null);
 
   const { data: tags, isLoading: tagsLoading } = useTags();
   const { data: tag, isLoading: tagLoading } = useTag(selectedId || 0);
@@ -27,13 +28,24 @@ const TagsPage = () => {
   };
 
   const handleUpdate = () => {
-    if (tag) {
-      const updatedRequest: TagRequest = {
-        name: tag.name + " (Updated)",
-        transactionsIds: tag.transactions.map((t) => t.id),
-      };
-      updateTag.mutate({ id: tag.id, tagRequest: updatedRequest });
+    if (tag && editingTag) {
+      updateTag.mutate({ id: tag.id, tagRequest: editingTag });
+      setEditingTag(null);
     }
+  };
+
+  const handleEdit = (t: Tag | undefined) => {
+    if (t) {
+      const editRequest: TagRequest = {
+        name: t.name,
+        transactionsIds: t.transactions.map((transaction) => transaction.id),
+      };
+      setEditingTag(editRequest);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingTag(null);
   };
 
   const handleDelete = (id: number) => {
@@ -125,10 +137,11 @@ const TagsPage = () => {
                           <button
                             className="btn btn-sm btn-warning"
                             onClick={() => {
-                              handleUpdate();
+                              setSelectedId(t.id)
+                              handleEdit(t);
                             }}
                           >
-                            Update
+                            Edit
                           </button>
                           <button
                             className="btn btn-sm btn-error"
@@ -170,49 +183,94 @@ const TagsPage = () => {
                       <div className="stat-value text-primary">{tag.id}</div>
                     </div>
                   </div>
-                  <div className="form-control">
-                    <label className="label">
-                      <span className="label-text font-semibold">Name</span>
-                    </label>
-                    <input
-                      type="text"
-                      className="input input-bordered"
-                      value={tag.name}
-                      readOnly
-                    />
-                  </div>
-                  <div className="form-control">
-                    <label className="label">
-                      <span className="label-text font-semibold">
-                        Associated Transactions
-                      </span>
-                    </label>
-                    <div className="stats shadow">
-                      <div className="stat">
-                        <div className="stat-title">Count</div>
-                        <div className="stat-value text-secondary">
-                          {tag.transactions.length}
-                        </div>
+                  
+                  {editingTag ? (
+                    // Edit Form
+                    <div className="space-y-4">
+                      <div className="form-control">
+                        <label className="label">
+                          <span className="label-text">Tag Name</span>
+                        </label>
+                        <input
+                          type="text"
+                          className="input input-bordered"
+                          value={editingTag.name}
+                          onChange={(e) => {
+                            setEditingTag(prev => prev ? { ...prev, name: e.target.value } : null);
+                          }}
+                        />
+                      </div>
+                      <div className="flex gap-2">
+                        <button 
+                          className="btn btn-primary"
+                          onClick={handleUpdate}
+                          disabled={updateTag.isPending}
+                        >
+                          {updateTag.isPending ? (
+                            <>
+                              <span className="loading loading-spinner loading-sm"></span>
+                              Updating...
+                            </>
+                          ) : (
+                            "Save Changes"
+                          )}
+                        </button>
+                        <button 
+                          className="btn btn-outline"
+                          onClick={handleCancelEdit}
+                        >
+                          Cancel
+                        </button>
                       </div>
                     </div>
-                  </div>
-                  {tag.transactions.length > 0 && (
-                    <div className="form-control">
-                      <label className="label">
-                        <span className="label-text font-semibold">
-                          Transaction List
-                        </span>
-                      </label>
-                      <div className="max-h-40 overflow-y-auto">
-                        {tag.transactions.map((transaction) => (
-                          <div
-                            key={transaction.id}
-                            className="badge badge-outline m-1"
-                          >
-                            {transaction.description} - ${transaction.amount}
-                          </div>
-                        ))}
+                  ) : (
+                    // View Mode
+                    <div className="space-y-4">
+                      <div className="form-control">
+                        <label className="label">
+                          <span className="label-text font-semibold">Name</span>
+                        </label>
+                        <input
+                          type="text"
+                          className="input input-bordered"
+                          value={tag.name}
+                          readOnly
+                        />
                       </div>
+                      <div className="form-control">
+                        <label className="label">
+                          <span className="label-text font-semibold">
+                            Associated Transactions
+                          </span>
+                        </label>
+                        <div className="stats shadow">
+                          <div className="stat">
+                            <div className="stat-title">Count</div>
+                            <div className="stat-value text-secondary">
+                              {tag.transactions.length}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      {tag.transactions.length > 0 && (
+                        <div className="form-control">
+                          <label className="label">
+                            <span className="label-text font-semibold">
+                              Transaction List
+                            </span>
+                          </label>
+                          <div className="max-h-40 overflow-y-auto">
+                            {tag.transactions.map((transaction) => (
+                              <div
+                                key={transaction.id}
+                                className="badge badge-outline m-1"
+                              >
+                                {transaction.description} - ${transaction.amount}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>

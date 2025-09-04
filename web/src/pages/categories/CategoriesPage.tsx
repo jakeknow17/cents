@@ -6,7 +6,7 @@ import {
   useUpdateCategory,
   useDeleteCategory,
 } from "../../shared/query/hooks";
-import type { CategoryRequest } from "../../types/budget";
+import type { Category, CategoryRequest } from "../../types/budget";
 
 const CategoriesPage = () => {
   const [selectedId, setSelectedId] = useState<number | null>(null);
@@ -17,6 +17,7 @@ const CategoriesPage = () => {
       color: "#000000",
     },
   );
+  const [editingCategory, setEditingCategory] = useState<CategoryRequest | null>(null);
 
   const { data: categories, isLoading: categoriesLoading } = useCategories();
   const { data: category, isLoading: categoryLoading } = useCategory(
@@ -32,17 +33,28 @@ const CategoriesPage = () => {
   };
 
   const handleUpdate = () => {
-    if (category) {
-      const updatedRequest: CategoryRequest = {
-        name: category.name + " (Updated)",
-        amount: category.amount,
-        color: category.color,
-      };
+    if (category && editingCategory) {
       updateCategory.mutate({
         id: category.id,
-        categoryRequest: updatedRequest,
+        categoryRequest: editingCategory,
       });
+      setEditingCategory(null);
     }
+  };
+
+  const handleEdit = (cat: Category | undefined) => {
+    if (cat) {
+      const editRequest: CategoryRequest = {
+        name: cat.name,
+        amount: cat.amount,
+        color: cat.color,
+      };
+      setEditingCategory(editRequest);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingCategory(null);
   };
 
   const handleDelete = (id: number) => {
@@ -179,10 +191,11 @@ const CategoriesPage = () => {
                           <button
                             className="btn btn-sm btn-warning"
                             onClick={() => {
-                              handleUpdate();
+                              setSelectedId(cat.id);
+                              handleEdit(cat);
                             }}
                           >
-                            Update
+                            Edit
                           </button>
                           <button
                             className="btn btn-sm btn-error"
@@ -226,47 +239,120 @@ const CategoriesPage = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="form-control">
-                    <label className="label">
-                      <span className="label-text font-semibold">Name</span>
-                    </label>
-                    <input
-                      type="text"
-                      className="input input-bordered"
-                      value={category.name}
-                      readOnly
-                    />
-                  </div>
-                  <div className="form-control">
-                    <label className="label">
-                      <span className="label-text font-semibold">
-                        Budget Amount
-                      </span>
-                    </label>
-                    <input
-                      type="text"
-                      className="input input-bordered"
-                      value={`$${category.amount.toFixed(2)}`}
-                      readOnly
-                    />
-                  </div>
-                  <div className="form-control">
-                    <label className="label">
-                      <span className="label-text font-semibold">Color</span>
-                    </label>
-                    <div className="flex items-center gap-3">
-                      <div
-                        className="w-8 h-8 rounded-full border-2 border-base-300"
-                        style={{ backgroundColor: category.color }}
-                      ></div>
-                      <input
-                        type="text"
-                        className="input input-bordered flex-1"
-                        value={category.color}
-                        readOnly
-                      />
+                  
+                  {editingCategory ? (
+                    // Edit Form
+                    <div className="space-y-4">
+                      <div className="form-control">
+                        <label className="label">
+                          <span className="label-text">Category Name</span>
+                        </label>
+                        <input
+                          type="text"
+                          className="input input-bordered"
+                          value={editingCategory.name}
+                          onChange={(e) => {
+                            setEditingCategory(prev => prev ? { ...prev, name: e.target.value } : null);
+                          }}
+                        />
+                      </div>
+                      <div className="form-control">
+                        <label className="label">
+                          <span className="label-text">Budget Amount</span>
+                        </label>
+                        <input
+                          type="number"
+                          className="input input-bordered"
+                          value={editingCategory.amount}
+                          onChange={(e) => {
+                            setEditingCategory(prev => prev ? { ...prev, amount: Number(e.target.value) } : null);
+                          }}
+                          step="0.01"
+                          min="0"
+                        />
+                      </div>
+                      <div className="form-control">
+                        <label className="label">
+                          <span className="label-text">Color</span>
+                        </label>
+                        <input
+                          type="color"
+                          className="input input-bordered h-12"
+                          value={editingCategory.color}
+                          onChange={(e) => {
+                            setEditingCategory(prev => prev ? { ...prev, color: e.target.value } : null);
+                          }}
+                        />
+                      </div>
+                      <div className="flex gap-2">
+                        <button 
+                          className="btn btn-primary"
+                          onClick={handleUpdate}
+                          disabled={updateCategory.isPending}
+                        >
+                          {updateCategory.isPending ? (
+                            <>
+                              <span className="loading loading-spinner loading-sm"></span>
+                              Updating...
+                            </>
+                          ) : (
+                            "Save Changes"
+                          )}
+                        </button>
+                        <button 
+                          className="btn btn-outline"
+                          onClick={handleCancelEdit}
+                        >
+                          Cancel
+                        </button>
+                      </div>
                     </div>
-                  </div>
+                  ) : (
+                    // View Mode
+                    <div className="space-y-4">
+                      <div className="form-control">
+                        <label className="label">
+                          <span className="label-text font-semibold">Name</span>
+                        </label>
+                        <input
+                          type="text"
+                          className="input input-bordered"
+                          value={category.name}
+                          readOnly
+                        />
+                      </div>
+                      <div className="form-control">
+                        <label className="label">
+                          <span className="label-text font-semibold">
+                            Budget Amount
+                          </span>
+                        </label>
+                        <input
+                          type="text"
+                          className="input input-bordered"
+                          value={`$${category.amount.toFixed(2)}`}
+                          readOnly
+                        />
+                      </div>
+                      <div className="form-control">
+                        <label className="label">
+                          <span className="label-text font-semibold">Color</span>
+                        </label>
+                        <div className="flex items-center gap-3">
+                          <div
+                            className="w-8 h-8 rounded-full border-2 border-base-300"
+                            style={{ backgroundColor: category.color }}
+                          ></div>
+                          <input
+                            type="text"
+                            className="input input-bordered flex-1"
+                            value={category.color}
+                            readOnly
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="alert alert-error">

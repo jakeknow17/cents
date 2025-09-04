@@ -6,7 +6,7 @@ import {
   useUpdateVendor,
   useDeleteVendor,
 } from "../../shared/query/hooks";
-import type { VendorRequest } from "../../types/budget";
+import type { Vendor, VendorRequest } from "../../types/budget";
 
 const VendorsPage = () => {
   const [selectedId, setSelectedId] = useState<number | null>(null);
@@ -14,6 +14,7 @@ const VendorsPage = () => {
     name: "",
     link: "",
   });
+  const [editingVendor, setEditingVendor] = useState<VendorRequest | null>(null);
 
   const { data: vendors, isLoading: vendorsLoading } = useVendors();
   const { data: vendor, isLoading: vendorLoading } = useVendor(selectedId || 0);
@@ -27,13 +28,24 @@ const VendorsPage = () => {
   };
 
   const handleUpdate = () => {
-    if (vendor) {
-      const updatedRequest: VendorRequest = {
-        name: vendor.name + " (Updated)",
-        link: vendor.link,
-      };
-      updateVendor.mutate({ id: vendor.id, vendorRequest: updatedRequest });
+    if (vendor && editingVendor) {
+      updateVendor.mutate({ id: vendor.id, vendorRequest: editingVendor });
+      setEditingVendor(null);
     }
+  };
+
+  const handleEdit = (v: Vendor | undefined) => {
+    if (v) {
+      const editRequest: VendorRequest = {
+        name: v.name,
+        link: v.link || "",
+      };
+      setEditingVendor(editRequest);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingVendor(null);
   };
 
   const handleDelete = (id: number) => {
@@ -151,10 +163,11 @@ const VendorsPage = () => {
                           <button
                             className="btn btn-sm btn-warning"
                             onClick={() => {
-                              handleUpdate();
+                              setSelectedId(v.id)
+                              handleEdit(v);
                             }}
                           >
-                            Update
+                            Edit
                           </button>
                           <button
                             className="btn btn-sm btn-error"
@@ -196,49 +209,108 @@ const VendorsPage = () => {
                       <div className="stat-value text-primary">{vendor.id}</div>
                     </div>
                   </div>
-                  <div className="form-control">
-                    <label className="label">
-                      <span className="label-text font-semibold">Name</span>
-                    </label>
-                    <input
-                      type="text"
-                      className="input input-bordered"
-                      value={vendor.name}
-                      readOnly
-                    />
-                  </div>
-                  <div className="form-control">
-                    <label className="label">
-                      <span className="label-text font-semibold">
-                        Website Link
-                      </span>
-                    </label>
-                    {vendor.link ? (
-                      <div className="flex gap-2">
+                  
+                  {editingVendor ? (
+                    // Edit Form
+                    <div className="space-y-4">
+                      <div className="form-control">
+                        <label className="label">
+                          <span className="label-text">Vendor Name</span>
+                        </label>
                         <input
                           type="text"
-                          className="input input-bordered flex-1"
-                          value={vendor.link}
+                          className="input input-bordered"
+                          value={editingVendor.name}
+                          onChange={(e) => {
+                            setEditingVendor(prev => prev ? { ...prev, name: e.target.value } : null);
+                          }}
+                        />
+                      </div>
+                      <div className="form-control">
+                        <label className="label">
+                          <span className="label-text">Website Link</span>
+                        </label>
+                        <input
+                          type="url"
+                          className="input input-bordered"
+                          value={editingVendor.link}
+                          onChange={(e) => {
+                            setEditingVendor(prev => prev ? { ...prev, link: e.target.value } : null);
+                          }}
+                          placeholder="https://example.com"
+                        />
+                      </div>
+                      <div className="flex gap-2">
+                        <button 
+                          className="btn btn-primary"
+                          onClick={handleUpdate}
+                          disabled={updateVendor.isPending}
+                        >
+                          {updateVendor.isPending ? (
+                            <>
+                              <span className="loading loading-spinner loading-sm"></span>
+                              Updating...
+                            </>
+                          ) : (
+                            "Save Changes"
+                          )}
+                        </button>
+                        <button 
+                          className="btn btn-outline"
+                          onClick={handleCancelEdit}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    // View Mode
+                    <div className="space-y-4">
+                      <div className="form-control">
+                        <label className="label">
+                          <span className="label-text font-semibold">Name</span>
+                        </label>
+                        <input
+                          type="text"
+                          className="input input-bordered"
+                          value={vendor.name}
                           readOnly
                         />
-                        <a
-                          href={vendor.link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="btn btn-outline"
-                        >
-                          Visit
-                        </a>
                       </div>
-                    ) : (
-                      <input
-                        type="text"
-                        className="input input-bordered"
-                        value="No link provided"
-                        readOnly
-                      />
-                    )}
-                  </div>
+                      <div className="form-control">
+                        <label className="label">
+                          <span className="label-text font-semibold">
+                            Website Link
+                          </span>
+                        </label>
+                        {vendor.link ? (
+                          <div className="flex gap-2">
+                            <input
+                              type="text"
+                              className="input input-bordered flex-1"
+                              value={vendor.link}
+                              readOnly
+                            />
+                            <a
+                              href={vendor.link}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="btn btn-outline"
+                            >
+                              Visit
+                            </a>
+                          </div>
+                        ) : (
+                          <input
+                            type="text"
+                            className="input input-bordered"
+                            value="No link provided"
+                            readOnly
+                          />
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="alert alert-error">
