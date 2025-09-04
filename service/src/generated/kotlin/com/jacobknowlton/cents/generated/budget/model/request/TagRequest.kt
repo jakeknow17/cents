@@ -5,5 +5,5 @@ package com.jacobknowlton.cents.generated.budget.model.request
 
 data class TagRequest(
     val name: String,
-    val transactionsId: List<Long>,
+    val transactionsIds: List<Long>,
 )

@@ -12,7 +12,7 @@ data class TransactionRequest(
     val type: Transaction.Type,
     val description: String,
     val notes: String? = null,
-    val tagsId: List<Long>,
+    val tagsIds: List<Long>,
     val categoryId: Long? = null,
     val vendorId: Long? = null,
     val accountId: Long? = null,

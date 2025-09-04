@@ -107,7 +107,7 @@ class ClassGenerator(
         // Fields
         for (field in schema.fields) {
             if (field.isList) {
-                modelSb.appendLine("${TAB}val ${field.name}${if (field.isRef) "Id" else ""}: List<${if (field.enumFields != null) "${schema.name}." else ""}${if (field.isRef) "Long" else field.type}${if (field.isNullable) "? = null" else ""}>,")
+                modelSb.appendLine("${TAB}val ${field.name}${if (field.isRef) "Ids" else ""}: List<${if (field.enumFields != null) "${schema.name}." else ""}${if (field.isRef) "Long" else field.type}${if (field.isNullable) "? = null" else ""}>,")
             } else {
                 modelSb.appendLine("${TAB}val ${field.name}${if (field.isRef) "Id" else ""}: ${if (field.enumFields != null) "${schema.name}." else ""}${if (field.isRef) "Long" else field.type}${if (field.isNullable) "? = null" else ""},")
             }
