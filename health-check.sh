@@ -9,7 +9,7 @@ echo "🏥 Running health checks for cents.jacobknowlton.com..."
 
 # Check if containers are running
 echo "📋 Checking container status..."
-docker-compose ps
+docker compose ps
 
 # Check HTTP redirect
 echo "🔄 Testing HTTP to HTTPS redirect..."
@@ -50,7 +50,7 @@ fi
 
 # Check database connection
 echo "🗄️  Testing database connection..."
-DB_CHECK=$(docker-compose exec -T postgres psql -U postgres -d cents -c "SELECT 1;" 2>/dev/null | grep -c "1 row")
+DB_CHECK=$(docker compose exec -T postgres psql -U postgres -d cents -c "SELECT 1;" 2>/dev/null | grep -c "1 row")
 if [ "$DB_CHECK" = "1" ]; then
     echo "✅ Database connection working"
 else

@@ -24,11 +24,11 @@ fi
 
 # Stop any existing containers
 echo "🛑 Stopping existing containers..."
-docker-compose down
+docker compose down
 
 # Build and start services (without SSL first)
 echo "🔨 Building and starting services..."
-docker-compose up -d postgres backend
+docker compose up -d postgres backend
 
 # Wait for backend to be ready
 echo "⏳ Waiting for backend to be ready..."
@@ -36,7 +36,7 @@ sleep 10
 
 # Start nginx (HTTP only initially)
 echo "🌐 Starting nginx (HTTP only)..."
-docker-compose up -d nginx
+docker compose up -d nginx
 
 # Wait for nginx to be ready
 echo "⏳ Waiting for nginx to be ready..."
@@ -44,15 +44,15 @@ sleep 5
 
 # Get initial SSL certificate
 echo "🔐 Obtaining SSL certificate..."
-docker-compose run --rm certbot
+docker compose run --rm certbot
 
 # Reload nginx with SSL configuration
 echo "🔄 Reloading nginx with SSL configuration..."
-docker-compose exec nginx nginx -s reload
+docker compose exec nginx nginx -s reload
 
 # Set up automatic certificate renewal
 echo "⏰ Setting up automatic certificate renewal..."
-(crontab -l 2>/dev/null; echo "0 12 * * * /usr/local/bin/certbot renew --quiet --deploy-hook 'docker-compose exec nginx nginx -s reload'") | crontab -
+(crontab -l 2>/dev/null; echo "0 12 * * * /usr/local/bin/certbot renew --quiet --deploy-hook 'docker compose exec nginx nginx -s reload'") | crontab -
 
 echo "✅ Deployment complete!"
 echo "🌐 Your site should now be available at: https://cents.jacobknowlton.com"
@@ -60,4 +60,4 @@ echo "🔒 SSL certificate will automatically renew via cron job"
 
 # Show running containers
 echo "📋 Running containers:"
-docker-compose ps
+docker compose ps

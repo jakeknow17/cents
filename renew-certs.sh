@@ -8,12 +8,12 @@ set -e
 echo "🔄 Checking for SSL certificate renewal..."
 
 # Run certbot renewal
-docker-compose run --rm certbot renew
+docker compose run --rm certbot renew
 
 # Reload nginx if certificates were renewed
 if [ $? -eq 0 ]; then
     echo "🔄 Reloading nginx configuration..."
-    docker-compose exec nginx nginx -s reload
+    docker compose exec nginx nginx -s reload
     echo "✅ Certificate renewal completed successfully"
 else
     echo "ℹ️  No certificate renewal needed"

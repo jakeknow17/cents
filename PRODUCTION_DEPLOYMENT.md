@@ -31,22 +31,22 @@ If you prefer manual control:
 
 ```bash
 # 1. Build and start services
-docker-compose up -d postgres backend
+docker compose up -d postgres backend
 
 # 2. Wait for backend to be ready
 sleep 10
 
 # 3. Start nginx (HTTP only initially)
-docker-compose up -d nginx
+docker compose up -d nginx
 
 # 4. Wait for nginx to be ready
 sleep 5
 
 # 5. Obtain SSL certificate
-docker-compose run --rm certbot
+docker compose run --rm certbot
 
 # 6. Reload nginx with SSL configuration
-docker-compose exec nginx nginx -s reload
+docker compose exec nginx nginx -s reload
 ```
 
 ## SSL Certificate Management
@@ -95,19 +95,19 @@ The Spring Boot security config allows:
 
 ```bash
 # View running containers
-docker-compose ps
+docker compose ps
 
 # View logs
-docker-compose logs -f nginx
-docker-compose logs -f backend
-docker-compose logs -f postgres
+docker compose logs -f nginx
+docker compose logs -f backend
+docker compose logs -f postgres
 ```
 
 ### Certificate Status
 
 ```bash
 # Check certificate expiration
-docker-compose run --rm certbot certificates
+docker compose run --rm certbot certificates
 
 # Test SSL configuration
 openssl s_client -connect cents.jacobknowlton.com:443 -servername cents.jacobknowlton.com
@@ -117,7 +117,7 @@ openssl s_client -connect cents.jacobknowlton.com:443 -servername cents.jacobkno
 
 ```bash
 # Backup database
-docker-compose exec postgres pg_dump -U postgres cents > backup.sql
+docker compose exec postgres pg_dump -U postgres cents > backup.sql
 
 # Backup certificates
 docker run --rm -v cents_certbot_certs:/data -v $(pwd):/backup alpine tar czf /backup/certs-backup.tar.gz -C /data .
@@ -137,10 +137,10 @@ docker run --rm -v cents_certbot_certs:/data -v $(pwd):/backup alpine tar czf /b
 2. **Certificate renewal fails**
    ```bash
    # Check nginx logs
-   docker-compose logs nginx
+   docker compose logs nginx
    
    # Manual renewal with verbose output
-   docker-compose run --rm certbot renew --verbose
+   docker compose run --rm certbot renew --verbose
    ```
 
 3. **CORS errors**
@@ -151,17 +151,17 @@ docker run --rm -v cents_certbot_certs:/data -v $(pwd):/backup alpine tar czf /b
 4. **Database connection issues**
    ```bash
    # Check postgres logs
-   docker-compose logs postgres
+   docker compose logs postgres
    
    # Test connection
-   docker-compose exec postgres psql -U postgres -d cents -c "SELECT 1;"
+   docker compose exec postgres psql -U postgres -d cents -c "SELECT 1;"
    ```
 
 ### Log Locations
 
 - **Nginx**: `/var/log/nginx/` (inside container)
-- **Backend**: Docker logs via `docker-compose logs backend`
-- **PostgreSQL**: Docker logs via `docker-compose logs postgres`
+- **Backend**: Docker logs via `docker compose logs backend`
+- **PostgreSQL**: Docker logs via `docker compose logs postgres`
 
 ## Security Considerations
 
