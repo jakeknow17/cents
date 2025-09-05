@@ -52,7 +52,6 @@ services:
       - backend
     volumes:
       - certbot_certs:/etc/letsencrypt
-      - certbot_www:/var/www/certbot
     restart: unless-stopped
 
   # Certbot for automatic SSL certificate management
@@ -60,11 +59,9 @@ services:
     image: certbot/certbot
     container_name: cents-certbot
     volumes:
-      - /etc/letsencrypt:/etc/letsencrypt
-      - /var/lib/letsencrypt:/var/lib/certbot
-    command: certonly --standalone --email knowlton.jacob17@gmail.com --agree-tos --no-eff-email -d cents.jacobknowlton.com -d www.cents.jacobknowlton.com
+      - certbot_certs:/etc/letsencrypt:rw
+    command: certonly --standalone --force-renewal --email knowlton.jacob17@gmail.com --agree-tos --no-eff-email -d cents.jacobknowlton.com -d www.cents.jacobknowlton.com
 
 volumes:
   postgres_data:
   certbot_certs:
-  certbot_www:
