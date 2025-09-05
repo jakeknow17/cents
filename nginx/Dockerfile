@@ -13,15 +13,8 @@ RUN npm run build
 # Container for serving the frontend and proxying the backend
 FROM nginx:alpine
 
-RUN apk add --no-cache openssl
-
 COPY --from=build /app/dist/ /usr/share/nginx/html/
 COPY nginx/nginx-reverse-proxy.conf /etc/nginx/nginx.conf
-
-# Entrypoint scripts (executed by the official nginx entrypoint)
-COPY nginx/docker-entrypoint.d/ /docker-entrypoint.d/
-# Ensure scripts are executable
-RUN chmod +x /docker-entrypoint.d/*.sh || true
 
 EXPOSE 80
 
