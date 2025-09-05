@@ -48,6 +48,7 @@ services:
       - "80:80"
       - "443:443"
     depends_on:
+      - certbot
       - backend
     volumes:
       - certbot_certs:/etc/letsencrypt
@@ -59,11 +60,9 @@ services:
     image: certbot/certbot
     container_name: cents-certbot
     volumes:
-      - certbot_certs:/etc/letsencrypt
-      - certbot_www:/var/www/certbot
-    command: certonly --webroot --webroot-path=/var/www/certbot --email jacob@jacobknowlton.com --agree-tos --no-eff-email -d cents.jacobknowlton.com -d www.cents.jacobknowlton.com
-    depends_on:
-      - nginx
+      - /etc/letsencrypt:/etc/letsencrypt
+      - /var/lib/letsencrypt:/var/lib/certbot
+    command: certonly --standalone --email knowlton.jacob17@gmail.com --agree-tos --no-eff-email -d cents.jacobknowlton.com -d www.cents.jacobknowlton.com
 
 volumes:
   postgres_data:

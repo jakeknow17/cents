@@ -36,45 +36,11 @@ sleep 10
 
 # Start nginx (HTTP only initially)
 echo "🌐 Starting nginx (HTTP only)..."
-docker compose up -d nginx
+docker compose up -d certbot nginx
 
 # Wait for nginx to be ready and test connectivity
 echo "⏳ Waiting for nginx to be ready..."
 sleep 10
-
-# Test nginx is responding
-echo "🔍 Testing nginx connectivity..."
-for i in {1..30}; do
-    if curl -f -s http://localhost/.well-known/acme-challenge/test > /dev/null 2>&1; then
-        echo "✅ Nginx is responding"
-        break
-    elif [ $i -eq 30 ]; then
-        echo "❌ Nginx failed to start properly"
-        docker compose logs nginx
-        exit 1
-    else
-        echo "⏳ Waiting for nginx... (attempt $i/30)"
-        sleep 2
-    fi
-done
-
-# Get initial SSL certificate
-echo "🔐 Obtaining SSL certificate..."
-if docker compose run --rm certbot; then
-    echo "✅ SSL certificate obtained successfully"
-    
-    # Switch to SSL configuration
-    echo "🔄 Switching to SSL configuration..."
-    ./switch-to-ssl.sh
-else
-    echo "❌ Failed to obtain SSL certificate"
-    echo "🔍 Debugging information:"
-    echo "Nginx logs:"
-    docker compose logs nginx
-    echo "Certbot logs:"
-    docker compose logs certbot
-    exit 1
-fi
 
 # Set up automatic certificate renewal
 echo "⏰ Setting up automatic certificate renewal..."
