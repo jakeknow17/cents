@@ -16,7 +16,7 @@ import type {
 
 const API_BASE: string =
   (import.meta.env.VITE_API_BASE as string) ||
-  "https://cents.jacobknowlton.com/api";
+  "https://api.cents.jacobknowlton.com";
 
 // ----------------------------------------------------------------------------
 // ACCOUNT HOOKS
