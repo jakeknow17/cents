@@ -68,12 +68,7 @@ tasks.withType<Test> {
     useJUnitPlatform()
 }
 
-flyway {
-    url = "jdbc:postgresql://localhost:5432/cents"
-    user = "postgres"
-    password = "postgres"
-    cleanDisabled = false
-}
+
 
 jooq {
     configuration {
